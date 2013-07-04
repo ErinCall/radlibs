@@ -1,12 +1,15 @@
 (function() {
 	'use strict';
 
-	var fire,
+	var submit_radlib,
 		collect_libs,
+		draw_new_lib_button,
+		add_new_lib,
+		row_with_vacancy,
 		display_radlib,
 		display_error;
 
-	fire = function( event ) {
+	submit_radlib = function( event ) {
 		event.preventDefault();
 		var rad,
 			libs = collect_libs();
@@ -91,9 +94,77 @@
 		return libs;
 	};
 
+	draw_new_lib_button = function() {
+		var $button;
+
+		$button = $( '<div>' );
+		$button.addClass( 'span4' );
+		$button.attr( 'id', 'new-lib-button' );
+		$button.css( 'font-size', '100px' );
+		$button.css( 'text-align', 'center' );
+		$button.css( 'border', 'dashed 1px');
+		$button.css( 'margin-top', '40px' );
+		$button.css( 'padding-top', '90px' );
+		$button.css( 'padding-bottom', '110px' );
+		$button.text( '+' );
+		$button.click( add_new_lib );
+		row_with_vacancy().append( $button );
+	};
+
+	add_new_lib = function () {
+		var $new_lib_button,
+			lib_name,
+			uc_lib_name,
+			$textarea,
+			$header,
+			$div;
+
+		lib_name = prompt('name your new lib:');
+		uc_lib_name = lib_name.charAt( 0 ).toUpperCase() + lib_name.slice( 1 );
+
+		$new_lib_button = $( '#new-lib-button' );
+		$new_lib_button.detach();
+
+		$div = $( '<div>' );
+		$div.addClass( 'span4' );
+
+		$textarea = $( '<textarea>' );
+		$textarea.addClass( 'library' );
+		$textarea.attr( 'rows', '10' );
+		$textarea.attr( 'name', lib_name );
+		$textarea.attr( 'id', lib_name );
+
+		$header = $( '<h4>' );
+		$header.text( uc_lib_name );
+
+		$div.append( $header );
+		$div.append( $textarea );
+
+		row_with_vacancy().append( $div );
+		row_with_vacancy().append( $new_lib_button );
+	};
+
+	row_with_vacancy = function (){
+		var $last_row,
+			entries_in_row,
+			$new_row;
+
+		$last_row = $( 'div.row-fluid' ).last();
+		entries_in_row = $last_row.find( 'div.span4' ).length;
+		if ( entries_in_row >= 3 ) {
+			$new_row = $( '<div>' );
+			$new_row.addClass( 'row-fluid marketing' );
+			$( '#page-content' ).append( $new_row );
+			return $new_row;
+		} else {
+			return $last_row;
+		}
+	};
+
 	$(document).ready(function() {
-		$( '#radlib-form' ).submit(fire);
-		$( '#fire' ).click(fire);
+		$( '#radlib-form' ).submit(submit_radlib);
+		$( '#fire' ).click(submit_radlib);
 		$( '#radlib' ).focus().select();
+		draw_new_lib_button();
 	});
 })();
