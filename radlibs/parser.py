@@ -1,9 +1,12 @@
 from __future__ import unicode_literals
 
+from random import choice
 from parsimonious.grammar import Grammar
 from parsimonious.nodes import NodeVisitor
 
 from radlibs.lib import load_lib
+
+recursion = {'depth': 0}
 
 grammar = Grammar("""
     contents     = rad*
@@ -66,10 +69,17 @@ class Lib(Node):
 
     def __init__(self, lib_name):
         self.lib_name = lib_name
-        self.lib = load_lib(lib_name)
+        # self.lib = load_lib(lib_name)
 
     def __str__(self):
-        return self.lib_name
+        if recursion['depth'] > 20:
+            return self.lib_name
+        lib = load_lib(self.lib_name)
+        try:
+            recursion['depth'] += 1
+            return str(parse(choice(lib)))
+        finally:
+            recursion['depth'] -= 1
 
 
 class RadParser(NodeVisitor):
@@ -77,9 +87,6 @@ class RadParser(NodeVisitor):
         self.rad = Rad()
         ast = grammar.parse(text)
         self.visit(ast)
-
-    def visit_contents(self, node, visited_children):
-        pass
 
     def generic_visit(self, node, visited_children):
         pass
