@@ -14,6 +14,11 @@ class TestParser(TestCase):
         eq_(rad, plaintext)
         eq_(type(rad.children[0]), Text)
 
+    def test_an_empty_string(self):
+        plaintext = ''
+        rad = parse(plaintext)
+        eq_(rad, plaintext)
+
     def test_just_a_lib(self):
         plaintext = "<Song>"
         rad = parse(plaintext)
@@ -25,7 +30,7 @@ class TestParser(TestCase):
             'Blood On The Leaves',
             ])
 
-    def test_a_libs_and_text_intermingled(self):
+    def test_libs_and_text_intermingled(self):
         plaintext = "the <Animal> ate my <Loot>"
 
         rad = parse(plaintext)
