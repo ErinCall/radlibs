@@ -11,16 +11,16 @@ class TestParser(TestCase):
     def test_just_a_string(self):
         plaintext = "no remorse, 'cause I still remember"
         rad = parse(plaintext)
-        eq_(rad, [plaintext])
-        eq_(type(rad[0]), Text)
+        eq_(rad, plaintext)
+        eq_(type(rad.children[0]), Text)
 
     def test_just_a_lib(self):
         plaintext = "<Song>"
         rad = parse(plaintext)
 
-        eq_(rad, ['Song'])
-        eq_(type(rad[0]), Lib)
-        eq_(rad[0].lib, [
+        eq_(str(rad), 'Song')
+        eq_(type(rad.children[0]), Lib)
+        eq_(rad.children[0].lib, [
             'Black Skinhead',
             'Blood On The Leaves',
             ])
@@ -29,12 +29,13 @@ class TestParser(TestCase):
         plaintext = "the <Animal> ate my <Loot>"
 
         rad = parse(plaintext)
-        eq_(rad, ['the ', 'Animal', ' ate my ', 'Loot'])
-        eq_(rad[1].lib, [
+        eq_(rad, 'the Animal ate my Loot')
+        eq_(rad.children, ['the ', 'Animal', ' ate my ', 'Loot'])
+        eq_(rad.children[1].lib, [
             'cat',
             'dog',
             'buffoon'])
-        eq_(rad[3].lib, [
+        eq_(rad.children[3].lib, [
             'potion of booze',
             '+5 sword of sharpness'])
 
@@ -42,4 +43,4 @@ class TestParser(TestCase):
         plaintext = "look over there --\>"
 
         rad = parse(plaintext)
-        eq_(rad, ['look over there -->'])
+        eq_(rad, 'look over there -->')
