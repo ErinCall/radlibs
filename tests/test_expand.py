@@ -1,10 +1,11 @@
 from __future__ import unicode_literals
 
-from unittest import TestCase
 from tests import with_libs
 from nose.tools import eq_
 
 from radlibs.expand import expand
+
+from tests import TestCase
 
 def test_libs():
 	return {

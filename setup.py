@@ -12,6 +12,9 @@ setup(name="radlibs",
       scripts=[],
       install_requires=[
           "parsimonious",
+          'yoyo-migrations',
+          'sqlalchemy',
+          "psycopg2",
 
           "nose",
           'mock',
