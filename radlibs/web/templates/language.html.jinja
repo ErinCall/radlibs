@@ -1,0 +1,54 @@
+{%extends 'layout.html.jinja'%}
+{% set active_page = 'language' %}
+{%block content%}
+    <div class="row-fluid marketing">
+        <div class="span12">
+            <h4>The Language</h4>
+            <p>If you're familiar with the idea of Madlibs, you're already familiar with the basics of Radlibs. A Radlib includes any amount of text and any number of references to <em>Libraries</em>. A Library contains one or more Radlibs. When a Radlib is <em>expanded</em>, a random sub-Radlib is chosen from each referenced Library.</p>
+            <p>Thus, if you have a Library called "Verb", containing a few verbs:</p>
+            <pre class="listing">
+sing
+run
+fart
+wash</pre>
+            <p>and a Library called "Adverb", containing a few of those:</p>
+            <pre class="listing">
+wetly
+exuberantly
+joyfully
+slowly</pre>
+            <p>Then you can write a short Radlib that uses them:</p>
+            <pre class="listing">I love to &lt;Verb&gt; &lt;Adjective&gt;!</pre>
+            <p>The Radlibs engine will select a random Verb and a random Adjective from the supplied lists and generate a sentence with it:</p>
+            <pre class="listing">I love to run exuberantly!</pre>
+        </div>
+    </div>
+    <div class="row-fluid marketing">
+        <div class="span12">
+            <h4>Recursion</h4>
+            <p>Libraries' contents are themselves Radlibs. Thus, they can reference other libraries! This is where things really start to get rad. Suppose you have a Library called "Loot":</p>
+            <pre class="listing">
++5 Sword
+Gold piece
+Heavy Truncheon
+bolt</pre>
+            <p>Then you could define a library called "Treasure":</p>
+            <pre class="listing">
+you find 1 &lt;Loot&gt;.
+you find 5 &lt;Loot&gt;s.
+bonanza! You find over 9000 &lt;Loot&gt;s!</pre>
+            <p>Now you can go treasure-hunting:</p>
+            <pre class="listing">
+Upon opening the chest, &lt;Treasure&gt;</pre>
+            <p>You'll find something or other&hellip;</p>
+            <pre class="listing">
+Upon opening the chest, you find 5 bolts.</pre>
+        </div>
+    </div>
+    <div class="row-fluid marketing">
+        <div class="span12">
+            <h4>Live Demo</h4>
+            <p>Radsnap provides a live demo of its capabilites. <a href="{{ url_for('live_demo') }}">Check it out!</a></p>
+        </div>
+    </div>
+{%endblock content%}

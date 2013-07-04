@@ -19,3 +19,13 @@ def after_request(response):
 @app.route('/')
 def index():
     return render_template('index.html.jinja')
+
+
+@app.route('/live_demo/')
+def live_demo():
+    return render_template('live_demo.html.jinja')
+
+
+@app.route('/language/')
+def language():
+    return render_template('language.html.jinja')
