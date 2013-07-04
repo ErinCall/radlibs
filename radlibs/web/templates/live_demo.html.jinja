@@ -1,0 +1,80 @@
+{%extends 'layout.html.jinja'%}
+{% set active_page = 'live_demo' %}
+{%block content%}
+<div class="jumbotron">
+	<form action="">
+		<input type="text" id="radlib" value="Since the &lt;Alien_race&gt; was in &lt;Location&gt;, it figured it would try the local &lt;Food&gt; with &lt;Condiment&gt;.">
+	</form>
+    <a class="btn btn-large btn-success" href="#" id="fire">Evaluate!</a>
+</div>
+<div class="row-fluid marketing">
+	<div class="span4">
+		<h4>Carne</h4>
+		<textarea name="carne" id="carne" class="library" rows="10">chapulines
+&lt;Carne&gt; relleno
+jamón
+manteca
+chorizo
+tocineta
+tocineta y &lt;Carne&gt;</textarea>
+	</div>
+	<div class="span4">
+		<h4>Food</h4>
+		<textarea class="library" name="food" id="food" rows="10">arroz con &lt;Carne&gt;
+arroces con &lt;Carne&gt;
+&lt;Animal&gt; meat
+&lt;Animal&gt; eggs
+cream cheese
+omelette
+&lt;Vegetable&gt; omelette
+&lt;Location&gt; omelette
+donut</textarea>
+	</div>
+	<div class="span4">
+		<h4>Animal</h4>
+		<textarea class="library" name="animal" id="animal" rows="10">bat
+horse
+pony
+vampire &lt;Animal&gt;
+mosquito
+fly
+&lt;Animal&gt;fly
+skeptopotamus
+LOL&lt;Animal&gt;</textarea>
+	</div>
+</div>
+<div class="row-fluid marketing">
+	<div class="span4">
+		<h4>Location</h4>
+		<textarea name="location" id="location" rows="10" class="library">Castle Greyskull
+Snake Mountain
+The Cobra Terrordrome
+Pleasantville
+&lt;Location&gt; Technical College
+University of &lt;Location&gt;
+the Oort Cloud
+the linen closet</textarea>
+	</div>
+	<div class="span4">
+		<h4>Alien_race</h4>
+		<textarea name="alien_race" id="alien_race" rows="10">Martian
+Sullustan
+Corellian
+Wookiee
+Duros
+Neimoidian
+&lt;Alien_race&gt;-American</textarea>
+	</div>
+	<div class="span4">
+		<h4>Condiment</h4>
+		<textarea name="condiment" id="condiment" rows="10">&lt;Food&gt; relish
+horseradish
+&lt;Food&gt; chutney
+jam
+jelly
+cheez-whiz
+miracle whip</textarea>
+	</div>
+</div>
+
+{%endblock content%}
