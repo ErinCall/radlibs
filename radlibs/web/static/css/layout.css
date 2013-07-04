@@ -29,6 +29,9 @@ body {
     font-size: 15px;
     width: 700px;
 }
+.jumbotron .error {
+    color: #ff0000;
+}
 
 /* Supporting marketing content */
 .marketing {

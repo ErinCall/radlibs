@@ -2,7 +2,9 @@
 	'use strict';
 
 	var fire,
-		collect_libs;
+		collect_libs,
+		display_radlib,
+		display_error;
 
 	fire = function( event ) {
 		event.preventDefault();
@@ -18,23 +20,55 @@
 				rad: rad
 			},
 			success: function(data, status, jqXHR) {
-				var $jumbotron,
-					$h1;
+				var body = JSON.parse( data );
 
-				$jumbotron = $( '.jumbotron' );
-				$h1 = $jumbotron.find( 'h1' );
-
-				if ( $h1.length === 0 ) {
-					$h1 = $( '<h1>' );
-					$jumbotron.prepend( $h1 );
+				if ( body[ 'status' ] === 'ok' ) {
+					display_radlib( body[ 'radlib' ] );
+				} else {
+					display_error( body[ 'error' ] );
 				}
-
-				$h1.text( JSON.parse( data )[ 'radlib' ] );
 			},
 			error: function(jqXHR, status, errorThrown) {
 				alert( errorThrown );
 			}
 		});
+	};
+
+	display_radlib = function(radlib) {
+		var $jumbotron,
+			$h1,
+			$error;
+
+		$jumbotron = $( '.jumbotron' );
+		$h1 = $jumbotron.find( 'h1' );
+		$error = $jumbotron.find( 'h4' );
+		$error.remove();
+
+		if ( $h1.length === 0 ) {
+			$h1 = $( '<h1>' );
+			$jumbotron.prepend( $h1 );
+		}
+
+		$h1.text( radlib );
+	};
+
+	display_error = function( error ) {
+		var $jumbotron,
+			$h1,
+			$error;
+
+		$jumbotron = $( '.jumbotron' );
+		$h1 = $jumbotron.find( 'h1' );
+		$error = $jumbotron.find( 'h4' );
+		$h1.remove();
+
+		if ( $error.length === 0 ) {
+			$error = $( '<h4>' );
+			$error.attr('class', 'error');
+			$jumbotron.prepend( $error );
+		}
+
+		$error.text( error );
 	};
 
 	collect_libs = function() {

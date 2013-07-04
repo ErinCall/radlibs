@@ -7,7 +7,7 @@ from radlibs import Client
 PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
 app = Flask(__name__, static_folder=os.path.join(PROJECT_ROOT, 'static'),
             static_url_path='/static')
-app.secret_key = os.environ['SECRET_KEY']
+app.secret_key = os.environ.get('SECRET_KEY')
 
 
 @app.after_request

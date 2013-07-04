@@ -7,6 +7,7 @@ from functools import wraps
 from sqlalchemy import create_engine
 
 import radlibs
+from radlibs.web import app
 
 import unittest
 from mock import patch
@@ -16,6 +17,8 @@ class TestCase(unittest.TestCase):
     def setUp(self):
         radlibs.Client()._engine = db_info['engine']
         radlibs.Client().session().commit = radlibs.Client().session().flush
+        app.secret_key = str('super sekret')
+        self.app = app.test_client()
 
     def tearDown(self):
         radlibs.Client().session().rollback()
@@ -23,12 +26,14 @@ class TestCase(unittest.TestCase):
 
 db_info = {}
 
+
 def setUpPackage():
     create_temp_database()
     temp_db_url = 'postgresql://localhost/%s' % db_info['temp_db_name']
     db_info['engine'] = create_engine(temp_db_url)
 
     apply_migrations(temp_db_url)
+
 
 def tearDownPackage():
     terminate_query = """
