@@ -37,7 +37,7 @@ class TestParser(TestCase):
         plaintext = "<Animal>"
         rad = parse(plaintext)
 
-        eq_(str(rad), 'cat')
+        eq_(unicode(rad), 'cat')
         eq_(type(rad.children[0]), Lib)
 
     @with_libs(test_libs())
@@ -58,6 +58,6 @@ class TestParser(TestCase):
     def test_recursion_depth_is_limited(self):
         plaintext = '<Song_which_never_ends>'
         rad = parse(plaintext)
-        radlib = str(rad)
+        radlib = unicode(rad)
         assert len(radlib) > 3000, radlib
         assert len(radlib) < 9000, radlib

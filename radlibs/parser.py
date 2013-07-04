@@ -26,10 +26,10 @@ class Node(object):
         raise NotImplementedError('__str__')
 
     def __eq__(self, other):
-        return str(self) == other
+        return unicode(self) == other
 
     def __repr__(self):
-        return "{0}: '{1}'".format(type(self), str(self))
+        return "{0}: '{1}'".format(type(self), unicode(self))
 
 
 class Rad(Node):
@@ -47,7 +47,7 @@ class Rad(Node):
             self.children.append(child)
 
     def __str__(self):
-        return ''.join([str(child) for child in self.children])
+        return ''.join([unicode(child) for child in self.children])
 
 
 class Text(Node):
@@ -57,7 +57,7 @@ class Text(Node):
         self.characters = [initial]
 
     def append(self, text):
-        self.characters.append(str(text))
+        self.characters.append(unicode(text))
 
     def __str__(self):
         return ''.join(self.characters)
@@ -77,7 +77,7 @@ class Lib(Node):
         lib = load_lib(self.lib_name)
         try:
             recursion['depth'] += 1
-            return str(parse(choice(lib)))
+            return unicode(parse(choice(lib)))
         finally:
             recursion['depth'] -= 1
 

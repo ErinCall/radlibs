@@ -22,15 +22,15 @@ def demo_eval():
     except KeyError as e:
         return _error("the 'libs' param is required")
     except ValueError as e:
-        return _error("'libs' param is not valid JSON: " + str(e))
+        return _error("'libs' param is not valid JSON: " + unicode(e))
 
     with patch('radlibs.parser.load_lib', lambda name: libs[name]):
         try:
-            radlib = str(parse(rad))
+            radlib = unicode(parse(rad))
         except KeyError as e:
             return _error("No such Library '{0}'".format(e.message))
         except IncompleteParseError as e:
-            return _error(str(e))
+            return _error(unicode(e))
 
     return {
         'status': 'ok',
