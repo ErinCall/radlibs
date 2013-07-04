@@ -15,6 +15,7 @@ setup(name="radlibs",
           'yoyo-migrations',
           'sqlalchemy',
           "psycopg2",
+          'flask',
 
           "nose",
           'mock',

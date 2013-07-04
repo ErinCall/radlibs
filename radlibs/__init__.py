@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from sqlalchemy import create_engine
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
