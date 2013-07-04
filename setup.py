@@ -17,6 +17,7 @@ setup(name="radlibs",
           "psycopg2",
           'flask',
           'gunicorn',
+          'requests',
 
           "nose",
           'mock',

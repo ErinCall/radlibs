@@ -40,3 +40,20 @@ body {
 .marketing p + h4 {
     margin-top: 28px;
 }
+
+/* Jayn Rand */
+#janrainEngageEmbed {
+    display: none;
+    position: absolute;
+    margin-left: 310px;
+    margin-top: 50px;
+}
+
+/* header */
+.nav-pills > #show-sign-in > a,
+.nav-pills > #show-sign-in > a:hover,
+.nav-pills > #show-sign-in > a:focus {
+    background-color: #5BB75B;
+    color: #ffffff;
+    background-image: linear-gradient(to bottom, #62C462, #51A351);
+}

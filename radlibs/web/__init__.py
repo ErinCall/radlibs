@@ -8,6 +8,8 @@ PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
 app = Flask(__name__, static_folder=os.path.join(PROJECT_ROOT, 'static'),
             static_url_path='/static')
 app.secret_key = os.environ.get('SECRET_KEY')
+if 'SERVER_NAME' in os.environ:
+    app.config['SERVER_NAME'] = os.environ['SERVER_NAME']
 
 
 @app.after_request
@@ -30,4 +32,10 @@ def live_demo():
 def language():
     return render_template('language.html.jinja')
 
+
+@app.route('/privacy_policy')
+def privacy_policy():
+    return render_template('privacy_policy.html.jinja')
+
 import radlibs.web.controllers.demo_eval
+import radlibs.web.controllers.login

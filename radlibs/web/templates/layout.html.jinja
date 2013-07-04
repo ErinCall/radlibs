@@ -15,6 +15,36 @@
     <link rel="apple-touch-icon"      href="/static/img/favicon-128.png">
     <link rel="icon" type="image/png" href="/static/img/favicon-128.png">
     <link rel="icon" type="image/png" href="/static/img/favicon-16.png">
+
+    <script type="text/javascript">
+    (function() {
+        if (typeof window.janrain !== 'object') window.janrain = {};
+        if (typeof window.janrain.settings !== 'object') window.janrain.settings = {};
+
+        janrain.settings.tokenUrl = "{{ url_for('token_url', _external=True) }}?redirect_uri={{ request.path |urlencode}}";
+
+        function isReady() { janrain.ready = true; };
+        if (document.addEventListener) {
+          document.addEventListener("DOMContentLoaded", isReady, false);
+        } else {
+          window.attachEvent('onload', isReady);
+        }
+
+        var e = document.createElement('script');
+        e.type = 'text/javascript';
+        e.id = 'janrainAuthWidget';
+
+        if (document.location.protocol === 'https:') {
+          e.src = 'https://rpxnow.com/js/lib/radlibs/engage.js';
+        } else {
+          e.src = 'http://widget-cdn.rpxnow.com/js/lib/radlibs/engage.js';
+        }
+
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(e, s);
+    })();
+    </script>
+
 </head>
 
 <body>
@@ -31,7 +61,11 @@
                         <a href="{{ url_for(id) }}">{{ text }}</a>
                     </li>
                 {% endfor %}
+                <li id="show-sign-in">
+                    <a href="#">Sign In</a>
+                    </li>
             </ul>
+            <div id="janrainEngageEmbed"></div>
             <h3 class="muted">Radlibs</h3>
         </div>
 
@@ -44,13 +78,17 @@
         <hr>
 
         <div class="footer">
-            <p>&copy; Andrew Lorente 2013</p>
+            <p>
+                &copy; Andrew Lorente 2013 &middot;
+                <a href="{{ url_for('privacy_policy') }}">Privacy Policy</a>
+            </p>
         </div>
 
     </div> <!-- /container -->
     <script src="/static/js/jquery.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
     <script src="/static/js/underscore-min.js"></script>
+    <script src="/static/js/radlibs.js"></script>
     {%block scripts %}{%endblock%}
 </body>
 </html>
