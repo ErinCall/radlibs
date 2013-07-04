@@ -3,10 +3,13 @@ from parsimonious.nodes import NodeVisitor
 
 
 grammar = Grammar("""
-    contents = text* lib* text*
-    lib      = "<" lib_name ">"
-    lib_name = ~"[A-Z]" ~"[a-z_]*"
-    text     = ~"[A-Z 0-9,']*"i
+    contents     = rad*
+    rad          = text / lib
+    lib          = "<" lib_name ">"
+    lib_name     = ~"[A-Z]" ~"[a-z_]*"
+    text         = letter+
+    letter       = anglebracket / ~"[^<>]"
+    anglebracket = "\\<" / "\\>"
 """)
 
 
@@ -35,7 +38,14 @@ class RadParser(NodeVisitor):
         pass
 
     def visit_text(self, node, visited_children):
-        self.rad.append(Text(node.text))
+        letters = []
+        for child in node.children:
+            character_node = child.children[0]
+            if character_node.expr_name == 'anglebracket':
+                letters.append(character_node.text.replace('\\', ''))
+            else:
+                letters.append(character_node.text)
+        self.rad.append(Text(''.join(letters)))
 
     def visit_lib_name(self, node, visited_children):
         self.rad.append(Lib(node.text))
