@@ -29,3 +29,5 @@ def live_demo():
 @app.route('/language/')
 def language():
     return render_template('language.html.jinja')
+
+import radlibs.web.controllers.demo_eval

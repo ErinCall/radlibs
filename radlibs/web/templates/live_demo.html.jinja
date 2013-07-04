@@ -2,7 +2,7 @@
 {% set active_page = 'live_demo' %}
 {%block content%}
 <div class="jumbotron">
-	<form action="">
+	<form action="" id='radlib-form'>
 		<input type="text" id="radlib" value="Since the &lt;Alien_race&gt; was in &lt;Location&gt;, it figured it would try the local &lt;Food&gt; with &lt;Condiment&gt;.">
 	</form>
     <a class="btn btn-large btn-success" href="#" id="fire">Evaluate!</a>
@@ -57,7 +57,7 @@ the linen closet</textarea>
 	</div>
 	<div class="span4">
 		<h4>Alien_race</h4>
-		<textarea name="alien_race" id="alien_race" rows="10">Martian
+		<textarea name="alien_race" id="alien_race" rows="10" class="library">Martian
 Sullustan
 Corellian
 Wookiee
@@ -67,7 +67,7 @@ Neimoidian
 	</div>
 	<div class="span4">
 		<h4>Condiment</h4>
-		<textarea name="condiment" id="condiment" rows="10">&lt;Food&gt; relish
+		<textarea name="condiment" id="condiment" rows="10" class="library">&lt;Food&gt; relish
 horseradish
 &lt;Food&gt; chutney
 jam
@@ -76,5 +76,7 @@ cheez-whiz
 miracle whip</textarea>
 	</div>
 </div>
-
 {%endblock content%}
+{%block scripts%}
+<script src="/static/js/live_demo.js"></script>
+{%endblock scripts%}
