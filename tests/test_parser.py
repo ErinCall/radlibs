@@ -19,12 +19,23 @@ class TestParser(TestCase):
 
         eq_(rad, ['Song'])
         eq_(type(rad[0]), Lib)
+        eq_(rad[0].lib, [
+            'Black Skinhead',
+            'Blood On The Leaves',
+            ])
 
     def test_a_libs_and_text_intermingled(self):
         plaintext = "the <Animal> ate my <Loot>"
 
         rad = parse(plaintext)
         eq_(rad, ['the ', 'Animal', ' ate my ', 'Loot'])
+        eq_(rad[1].lib, [
+            'cat',
+            'dog',
+            'buffoon'])
+        eq_(rad[3].lib, [
+            'potion of booze',
+            '+5 sword of sharpness'])
 
     def test_literal_angle_brackets(self):
         plaintext = "look over there --\>"

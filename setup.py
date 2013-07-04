@@ -14,5 +14,6 @@ setup(name="radlibs",
           "parsimonious",
 
           "nose",
+          'mock',
       ],
       )

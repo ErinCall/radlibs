@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from parsimonious.grammar import Grammar
 from parsimonious.nodes import NodeVisitor
 
+from radlibs.lib import load_lib
 
 grammar = Grammar("""
     contents     = rad*
@@ -24,7 +25,9 @@ class Text(str):
 
 
 class Lib(str):
-    pass
+    def __init__(self, contents):
+        super(Lib, self).__init__(contents)
+        self.lib = load_lib(contents)
 
 
 class RadParser(NodeVisitor):
