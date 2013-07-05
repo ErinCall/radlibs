@@ -1,0 +1,16 @@
+{% extends "layout.html.jinja" %}
+{% set active_page = 'manage' %}
+{% block content %}
+<div class="jumbotron">
+	<h1>Create New Association</h1>
+</div>
+<div class="fluid-row marketing">
+	<div class="span12">
+		<form method="POST" action="">
+			<label for="name">Name: </label>
+			<input type="text" name="name" id="name">
+			<input type="submit" value="Create">
+		</form>
+	</div>
+</div>
+{% endblock content %}

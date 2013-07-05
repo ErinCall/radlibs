@@ -18,6 +18,7 @@ setup(name="radlibs",
           'flask',
           'gunicorn',
           'requests',
+          'blinker',
 
           "nose",
           'mock',

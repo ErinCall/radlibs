@@ -1,8 +1,9 @@
 from __future__ import unicode_literals
 
 import os
-from flask import Flask, render_template, g, session, request
+from flask import Flask, render_template, g, session
 from radlibs import Client
+from radlibs.table.user import User
 
 PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
 app = Flask(__name__, static_folder=os.path.join(PROJECT_ROOT, 'static'),
@@ -14,9 +15,13 @@ if 'SERVER_NAME' in os.environ:
 
 @app.before_request
 def before_request():
-    g.user = None
+    if not hasattr(g, 'user'):
+        g.user = None
     if 'user' in session:
-        g.user = session['user']
+        user = Client().session().query(User).\
+            filter(User.email == session['user']['email']).\
+            one()
+        g.user = user
 
 
 @app.after_request
@@ -46,3 +51,4 @@ def privacy_policy():
 
 import radlibs.web.controllers.demo_eval
 import radlibs.web.controllers.login
+import radlibs.web.controllers.association

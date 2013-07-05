@@ -1,0 +1,15 @@
+{% extends "layout.html.jinja" %}
+{% set active_page = 'manage' %}
+{% block content %}
+<div class="jumbotron">
+	<h1>Manage your Associations</h1>
+</div>
+<ul>
+	{% for association in associations %}
+		<li><a href="{{ url_for('manage_association', association_id=association.association_id) }}">
+			{{ association.name }}
+		</a></li>
+	{% endfor %}
+	<li> or <a href="{{ url_for('new_association') }}">create a new association</a></li>
+</ul>
+{% endblock content %}

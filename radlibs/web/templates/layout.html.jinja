@@ -60,9 +60,14 @@
                         <a href="{{ url_for(id) }}">{{ text }}</a>
                     </li>
                 {% endfor %}
-                <li id="show-sign-in">
-                    <a href="#">Sign In</a>
+                {% if 'user' in session %}
+                    <li {% if active_page == 'manage' %}class="active"{% endif %}>
+                        <a href="{{ url_for('list_associations') }}">Manage Associations</a>
+                {% else %}
+                    <li id="show-sign-in">
+                        <a href="#">Sign In</a>
                     </li>
+                {% endif %}
             </ul>
             <div id="janrainEngageEmbed"></div>
             <h3 class="muted">Radlibs</h3>

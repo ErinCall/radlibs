@@ -5,9 +5,11 @@ import subprocess
 import time
 from functools import wraps
 from sqlalchemy import create_engine
+from flask import appcontext_pushed, g
 
 import radlibs
 from radlibs.web import app
+from radlibs.table.user import User
 
 import unittest
 from mock import patch
@@ -85,3 +87,17 @@ def with_libs(libs):
                 fn(*args, **kwargs)
         return wrapper
     return decorator
+
+
+def logged_in(fn):
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        user = User(email="adele@umg.com", identifier="facebook.com/adele")
+        radlibs.Client().session().add(user)
+
+        def handler(sender, **kwargs):
+            g.user = user
+        with appcontext_pushed.connected_to(handler, app):
+            args = args + (user,)
+            fn(*args, **kwargs)
+    return wrapper
