@@ -2,19 +2,16 @@
 	'use strict';
 
 	var submit_radlib,
-		collect_libs,
-		draw_new_lib_button,
-		add_new_lib,
-		row_with_vacancy,
+		new_lib,
 		display_radlib,
 		edit_lib_title,
-		libcase,
-		display_error;
+		display_error,
+		radlibs = window.radlibs;
 
 	submit_radlib = function( event ) {
 		event.preventDefault();
 		var rad,
-			libs = collect_libs();
+			libs = radlibs.collect_libs();
 
 		rad = $( '#radlib' ).val();
 
@@ -76,63 +73,14 @@
 		$error.text( error );
 	};
 
-	collect_libs = function() {
-		var libs = {};
-
-		_.each( $( '.library' ), function( textarea ) {
-			var $textarea,
-				lib_name,
-				lines;
-
-			$textarea = $(textarea);
-			lib_name = $textarea.attr( 'name' );
-			lines = $textarea.val().split( "\n" );
-
-			libs[libcase(lib_name)] = lines;
-		});
-
-		return libs;
-	};
-
-	draw_new_lib_button = function() {
-		var $button;
-
-		$button = $( '<div>' );
-		$button.addClass( 'span4' );
-		$button.attr( 'id', 'new-lib-button' );
-		$button.css( 'font-size', '100px' );
-		$button.css( 'text-align', 'center' );
-		$button.css( 'border', 'dashed 1px');
-		$button.css( 'margin-top', '40px' );
-		$button.css( 'padding-top', '90px' );
-		$button.css( 'padding-bottom', '110px' );
-		$button.text( '+' );
-		$button.click( add_new_lib );
-		row_with_vacancy().append( $button );
-	};
-
-	add_new_lib = function () {
-		var $new_lib_button,
-			$textarea,
+	new_lib = function () {
+		var $div,
 			$edit_link,
 			$edit_button,
-			$header,
-			$div;
+			$header;
 
-		$new_lib_button = $( '#new-lib-button' );
-		$new_lib_button.detach();
-
-		$div = $( '<div>' );
-		$div.addClass( 'span4' );
-
-		$textarea = $( '<textarea>' );
-		$textarea.addClass( 'library' );
-		$textarea.attr( 'rows', '10' );
-		$textarea.attr( 'name', 'untitled' );
-		$textarea.attr( 'id', 'untitled' );
-
-		$header = $( '<h4>' );
-		$header.text( libcase( 'untitled' ) );
+		$div = radlibs.add_new_lib();
+		$header = $div.find( 'h4' );
 
 		$edit_link = $( '<a>' );
 		$edit_button = $( '<img>' );
@@ -141,30 +89,7 @@
 		$edit_link.append( $edit_button );
 		$header.append( $edit_link );
 
-		$div.append( $header );
-		$div.append( $textarea );
-
-		row_with_vacancy().append( $div );
-		row_with_vacancy().append( $new_lib_button );
-
 		_.bind( edit_lib_title, $edit_button )();
-	};
-
-	row_with_vacancy = function (){
-		var $last_row,
-			entries_in_row,
-			$new_row;
-
-		$last_row = $( 'div.row-fluid' ).last();
-		entries_in_row = $last_row.find( 'div.span4' ).length;
-		if ( entries_in_row >= 3 ) {
-			$new_row = $( '<div>' );
-			$new_row.addClass( 'row-fluid marketing' );
-			$( '#page-content' ).append( $new_row );
-			return $new_row;
-		} else {
-			return $last_row;
-		}
 	};
 
 	edit_lib_title = function( event ) {
@@ -212,7 +137,7 @@
 			var new_title;
 
 			new_title = $input.val();
-			$header.text(libcase(new_title));
+			$header.text(radlibs.libcase(new_title));
 			$container.prepend($header);
 			$header.append($anchor);
 			$anchor.append($this);
@@ -227,15 +152,12 @@
 		$done_button.click(done_editing);
 	};
 
-	libcase = function( title ) {
-		return title[ 0 ].toUpperCase() + title.slice( 1 );
-	};
 
 	$(document).ready(function() {
 		$( '#radlib-form' ).submit( submit_radlib );
 		$( '#fire' ).click(submit_radlib);
 		$( '#radlib' ).focus().select();
 		$( '.edit-button' ).click( edit_lib_title );
-		draw_new_lib_button();
+		radlibs.draw_new_lib_button( new_lib );
 	});
 })();

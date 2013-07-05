@@ -23,3 +23,11 @@
 	</div>
 {% endfor %}
 {% endblock content %}
+{% block scripts %}
+	<script src="/static/js/edit_association.js"></script>
+	<script>
+		$(document).ready(function() {
+			$( 'body' ).data('association_id', {{ association.association_id }})
+		});
+	</script>
+{% endblock scripts %}
