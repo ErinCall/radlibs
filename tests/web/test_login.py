@@ -88,3 +88,28 @@ class TestLogin(TestCase):
         user = Client().session().query(User).one()
         eq_(user.email, 'tpain@umg.com')
         eq_(user.identifier, 'twitter.com/tpain')
+
+    @patch('radlibs.web.controllers.login.os')
+    @patch('radlibs.web.controllers.login.requests')
+    def test_error_when_a_user_uses_the_wrong_identifier(self, requests, os):
+        os.environ = {'ENGAGE_API_KEY': 'aoeu'}
+        response = Mock()
+        session = Client().session()
+        user = User(email='withintemptation@umg.com',
+                    identifier='http://www.twitter.com/withintemptation')
+        session.add(user)
+        session.flush()
+
+        requests.get.return_value = response
+        response.text = json.dumps({
+            'profile': {
+                'email': 'withintemptation@umg.com',
+                'identifier': 'facebook.com/withintemptation',
+            }
+        })
+        response = self.app.post(
+            '/token_url',
+            data={'token': 'asdf', 'redirect_uri': '/language'})
+        eq_(response.status_code, 200, response.data)
+        assert 'Maybe you meant to log in with Twitter?' in response.data,\
+               response.data

@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 import os
 import json
+import urlparse
 import requests
 from flask import request,\
     redirect,\
@@ -10,6 +11,7 @@ from flask import request,\
     url_for,\
     render_template
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import IntegrityError
 
 from radlibs import Client
 from radlibs.web import app
@@ -46,6 +48,15 @@ def token_url():
             one()
     except NoResultFound:
         if email:
+            existing_users = db_session.query(User).\
+                filter(User.email == email).\
+                all()
+            if existing_users:
+                provider = provider_for_identifier(
+                    existing_users[0].identifier)
+                return render_template(
+                    'identifier_mismatch.html.jinja',
+                    existing_provider=provider)
             user = User(email=email, identifier=identifier)
             db_session.add(user)
             session['user'] = {'identifier': identifier, 'email': email}
@@ -73,3 +84,13 @@ def register():
     db_session.add(user)
     session['user'] = {'email': user.email, 'identifier': user.identifier}
     return redirect(request.form['redirect_uri'])
+
+def provider_for_identifier(identifier):
+    parsed = urlparse.urlparse(identifier)
+    return {
+        'www.facebook.com': 'Facebook',
+        'www.live.coom': 'Live',
+        'www.twitter.com': 'Twitter',
+        'www.amazon.com': 'Amazon',
+        'www.google.com': 'Google',
+    }.get(parsed.netloc, parsed.netloc)
