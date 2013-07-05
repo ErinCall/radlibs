@@ -8,7 +8,7 @@ from radlibs.table.association import Association, UserAssociation
 from radlibs.table.radlib import Lib
 
 
-@app.route('/list_associations')
+@app.route('/associations')
 def list_associations():
     associations = Association.find_all_for_user(g.user)
     if associations:
@@ -18,12 +18,12 @@ def list_associations():
         return redirect(url_for('new_association'))
 
 
-@app.route('/new_association')
+@app.route('/association/new')
 def new_association():
     return render_template('new_association.html.jinja')
 
 
-@app.route('/new_association', methods=['POST'])
+@app.route('/association/new', methods=['POST'])
 def create_association():
     name = request.form['name']
     session = Client().session()

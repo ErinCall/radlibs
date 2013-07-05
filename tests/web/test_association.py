@@ -11,7 +11,7 @@ from radlibs import Client
 class TestAssociation(TestCase):
     @logged_in
     def test_association_list_redirects_to_create_if_user_has_none(self, user):
-        response = self.app.get('/list_associations')
+        response = self.app.get('/associations')
         eq_(response.status_code, 302, response.data)
 
     @logged_in
@@ -27,7 +27,7 @@ class TestAssociation(TestCase):
             association_id=watercooler.association_id, user_id=user.user_id))
         session.add(UserAssociation(
             association_id=codescouts.association_id, user_id=user.user_id))
-        response = self.app.get('/list_associations')
+        response = self.app.get('/associations')
 
         eq_(response.status_code, 200, response.data)
         assert 'watercooler' in response.data, response.data
@@ -37,7 +37,7 @@ class TestAssociation(TestCase):
     @logged_in
     def test_create_new_association(self, user):
         session = Client().session()
-        response = self.app.post('/new_association',
+        response = self.app.post('/association/new',
                                  data={'name': 'codescouts'})
         association = session.query(Association).one()
         user_association = session.query(UserAssociation).one()
