@@ -1,0 +1,13 @@
+{% extends "layout.html.jinja" %}
+
+{% block content %}
+<div class="marketing span6">
+	<h4>We need your email in order to properly identify you</h4>
+	<form method="POST" action="">
+		<input type="hidden" name="redirect_uri" id="redirect_uri" value="{{ redirect_uri }}">
+		<label for="email">Email: </label>
+		<input type="text" name="email" id="email">
+		<input type="submit" value="Submit">
+	</form>
+</div>
+{% endblock content %}

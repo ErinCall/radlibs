@@ -12,6 +12,13 @@ if 'SERVER_NAME' in os.environ:
     app.config['SERVER_NAME'] = os.environ['SERVER_NAME']
 
 
+@app.before_request
+def before_request():
+    g.user = None
+    if 'user' in session:
+        g.user = session['user']
+
+
 @app.after_request
 def after_request(response):
     Client().session().commit()
