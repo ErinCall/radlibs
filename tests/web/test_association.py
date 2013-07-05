@@ -4,6 +4,7 @@ from nose.tools import eq_
 from tests import TestCase, logged_in
 from radlibs.table.association import Association, UserAssociation
 from radlibs.table.user import User
+from radlibs.table.radlib import Lib
 from radlibs import Client
 
 
@@ -66,3 +67,34 @@ class TestAssociation(TestCase):
         response = self.app.get('/association/{0}'.format(
             association.association_id))
         eq_(response.status_code, 404, response.data)
+
+    @logged_in
+    def test_see_libs_in_an_association(self, user):
+        session = Client().session()
+        watercooler = Association(name='watercooler')
+        rtk = Association(name='rtk')
+        session.add(watercooler)
+        session.add(rtk)
+
+        session.flush()
+
+        session.add(UserAssociation(
+            association_id=rtk.association_id, user_id=user.user_id))
+        session.add(UserAssociation(
+            association_id=watercooler.association_id, user_id=user.user_id))
+
+        session.flush()
+
+        session.add(Lib(name='Rant', association_id=rtk.association_id))
+        session.add(Lib(name="Food",
+                        association_id=watercooler.association_id))
+        session.add(Lib(name="Animal",
+                        association_id=watercooler.association_id))
+
+        response = self.app.get('/association/{0}'.format(
+            watercooler.association_id))
+
+        eq_(response.status_code, 200, response.data)
+        assert 'Food' in response.data, "didn't see food"
+        assert 'Animal' in response.data, "didn't see animal"
+        assert "Rant" not in response.data, "saw some other association's lib"

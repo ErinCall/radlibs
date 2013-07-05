@@ -3,5 +3,23 @@
 {% block content %}
 <div class="jumbotron">
 	<h1>{{ association.name }}</h1>
+	<a class="btn btn-large btn-success" href="#" id="save-all">Save All</a>
 </div>
+{% for lib in libs %}
+	{% if loop.index is divisibleby 3 %}
+		<div class="row-fluid marketing">
+	{% endif %}
+			<div class="span4">
+				<h4>{{ lib.name }}</h4>
+				<textarea name="{{ lib.name }}" id="{{ lib.name }}" class="lib" rows=10>
+					<!-- todo: contents -->
+				</textarea>
+			</div>
+	{% if (loop.index + 1) is divisibleby 3 %}
+		</div>
+	{% endif %}
+{% else %}
+	<div class="row-fluid marketing">
+	</div>
+{% endfor %}
 {% endblock content %}
