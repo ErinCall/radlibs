@@ -61,7 +61,7 @@
 
     </div> <!-- /container -->
     <script>
-        window.token_url = "{{ url_for('token_url', _external=True) }}?redirect_uri={{ request.path |urlencode}}"
+        window.token_url = "{{ url_for('token_url', _external=True) }}?redirect_uri={{ request.path |urlencode}}";
     </script>
     <script src="/static/js/jquery.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
