@@ -36,11 +36,12 @@ class Message(object):
         if self.html is not None:
             message.attach(MIMEText(self.html, 'html'))
 
-        smtp = smtplib.SMTP('localhost')
         if 'SENDGRID_PASSWORD' in os.environ:
+            smtp = smtplib.SMTP('smtp.sendgrid.net', 587)
             smtp.login(os.environ['SENDGRID_USERNAME'],
                        os.environ['SENDGRID_PASSWORD'])
-        smtp.sendmail(self.from_address, self.to_addresses, message.as_string())
+            smtp.sendmail(
+                self.from_address, self.to_addresses, message.as_string())
 
 
 def send_verification_mail(user, verification_url):
