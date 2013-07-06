@@ -1,6 +1,8 @@
 from __future__ import unicode_literals
 
 import os
+import logging
+from logging.handlers import SMTPHandler
 from flask import Flask, render_template, g, session
 from radlibs import Client
 from radlibs.table.user import User
@@ -11,6 +13,26 @@ app = Flask(__name__, static_folder=os.path.join(PROJECT_ROOT, 'static'),
 app.secret_key = os.environ.get('SECRET_KEY')
 if 'SERVER_NAME' in os.environ:
     app.config['SERVER_NAME'] = os.environ['SERVER_NAME']
+
+if 'SENDGRID_PASSWORD' in os.environ and not app.debug:
+    mail_handler = SMTPHandler('smtp.sendgrid.net',
+                               'errors@radlibs.info',
+                               ['andrew.lorente@gmail.com'],
+                               'Radlib error',
+                               (os.environ['SENDGRID_USERNAME'], os.environ['SENDGRID_PASSWORD']))
+    mail_handler.setLevel(logging.ERROR)
+    mail_handler.setFormatter(logging.Formatter('''
+Message type:       %(levelname)s
+Location:           %(pathname)s:%(lineno)d
+Module:             %(module)s
+Function:           %(funcName)s
+Time:               %(asctime)s
+
+Message:
+
+%(message)s
+'''))
+    app.logger.addHandler(mail_handler)
 
 
 @app.before_request
