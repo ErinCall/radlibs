@@ -13,12 +13,10 @@ class TestMenu(TestCase):
         with patch('radlibs.web.g', g):
             eq_(build_menu(), {
                 'menu': [
-                    ('index', 'Home'),
                     ('live_demo', 'Try It Live'),
                     ('language', 'The Language'),
                 ]})
         response = self.app.get('/')
-        assert 'Home' in response.data, "Didn't see home"
         assert 'Try It Live' in response.data, "didn't see try it"
         assert 'The Language' in response.data, "didn't see language"
         assert 'Sign In' in response.data, "didn't see signin link"
@@ -30,13 +28,11 @@ class TestMenu(TestCase):
         with patch('radlibs.web.g', g):
             eq_(build_menu(), {
                 'menu': [
-                    ('index', 'Home'),
                     ('live_demo', 'Try It Live'),
                     ('language', 'The Language'),
                     ('list_associations', 'Manage Associations'),
                 ]})
         response = self.app.get('/')
-        assert 'Home' in response.data, "didn't see Home"
         assert "Try It Live" in response.data, "didn't see try it"
         assert 'The Language' in response.data, "didn't see language"
         assert 'Manage Associations' in response.data, "didn't see manage"
