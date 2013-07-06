@@ -87,8 +87,8 @@ def register():
     db_session.add(user)
     db_session.flush()
     token = EmailVerificationToken.generate(user)
-    send_verification_mail(url_for(
-        'verify_email', token=token.token, _external=True))
+    send_verification_mail(
+        user, url_for('verify_email', token=token.token, _external=True))
     session['user'] = {'email': user.email, 'identifier': user.identifier}
     return redirect(request.form['redirect_uri'])
 

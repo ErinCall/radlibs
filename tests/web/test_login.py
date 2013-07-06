@@ -94,6 +94,7 @@ class TestLogin(TestCase):
 
         token = session.query(EmailVerificationToken).one()
         send_verification_mail.assert_called_once_with(
+            user,
             'http://localhost/verify_email/{0}'.format(token.token))
 
     def test_verify_email(self):
