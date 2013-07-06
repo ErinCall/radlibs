@@ -59,9 +59,8 @@ import radlibs.web.controllers.radlib
 def build_menu():
     if g.user:
         return {'menu': [
-            ('live_demo', 'Try It Live'),
             ('language', 'The Language'),
-            ('list_associations', 'Manage Associations'),
+            ('list_associations', 'Associations'),
         ]}
     else:
         return {'menu': [
