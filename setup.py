@@ -7,7 +7,7 @@ setup(name="radlibs",
       description="self-recursive turing-complete madlibs implementation",
       author="Andrew Lorente",
       author_email="andrew.lorente@gmail.com",
-      url="github.com/andrewlorente/radsnap",
+      url="http://www.radlibs.info",
       packages=[
           'radlibs',
           'radlibs.web',
