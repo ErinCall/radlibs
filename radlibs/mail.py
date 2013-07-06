@@ -37,11 +37,18 @@ class Message(object):
             message.attach(MIMEText(self.html, 'html'))
 
         if 'SENDGRID_PASSWORD' in os.environ:
-            smtp = smtplib.SMTP('smtp.sendgrid.net', 587)
+            print "initializing sendgrid connection"
+            smtp = smtplib.SMTP('smtp.sendgrid.net', 587, timeout=10)
+            print "got sendgrid connection"
+            if not smtp:
+                raise StandardError("couldn't get a connection to sendgrid")
+            print 'logging in to sendgrid'
             smtp.login(os.environ['SENDGRID_USERNAME'],
                        os.environ['SENDGRID_PASSWORD'])
+            print 'sending mail'
             smtp.sendmail(
                 self.from_address, self.to_addresses, message.as_string())
+            print 'sent mail'
 
 
 def send_verification_mail(user, verification_url):
