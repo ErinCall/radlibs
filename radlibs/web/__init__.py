@@ -52,3 +52,4 @@ def privacy_policy():
 import radlibs.web.controllers.demo_eval
 import radlibs.web.controllers.login
 import radlibs.web.controllers.association
+import radlibs.web.controllers.radlib

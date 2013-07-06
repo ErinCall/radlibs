@@ -57,3 +57,10 @@ body {
     color: #ffffff;
     background-image: linear-gradient(to bottom, #62C462, #51A351);
 }
+
+/* association manage */
+.lib-display {
+    height: 220px;
+    border: solid 1px;
+    overflow-y: scroll;
+}

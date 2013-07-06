@@ -5,7 +5,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from radlibs import Client
 from radlibs.web import app
 from radlibs.table.association import Association, UserAssociation
-from radlibs.table.radlib import Lib
+from radlibs.table.radlib import Rad, Lib
 
 
 @app.route('/associations')
@@ -20,7 +20,7 @@ def list_associations():
 
 @app.route('/association/new')
 def new_association():
-    return render_template('new_association.html.jinja')
+    return render_template('new_thing.html.jinja', thing_name="Association")
 
 
 @app.route('/association/new', methods=['POST'])
@@ -52,14 +52,21 @@ def manage_association(association_id):
             one()
     except NoResultFound:
         abort(404)
-    libs = session.query(Lib).\
+    radlibs = session.query(Lib.name,
+                            Lib.lib_id,
+                            Rad.rad).\
+        select_from(Lib).\
+        outerjoin(Rad, Lib.lib_id == Rad.lib_id).\
         filter(Lib.association_id == association.association_id).\
         all()
+
+    libs = {}
+    for (lib_name, lib_id, rad) in radlibs:
+        if lib_name not in libs:
+            libs[lib_name] = {'rads': []}
+        libs[lib_name]['lib_id'] = lib_id
+        if rad:
+            libs[lib_name]['rads'].append(rad)
     return render_template('manage_association.html.jinja',
                            association=association,
                            libs=libs)
-
-
-@app.route('/association/<association_id>', methods=['POST'])
-def update_association(association_id):
-    pass

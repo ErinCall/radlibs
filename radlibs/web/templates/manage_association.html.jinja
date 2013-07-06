@@ -2,20 +2,27 @@
 {% set active_page = 'manage' %}
 {% block content %}
 <div class="jumbotron">
-	<h1>{{ association.name }}</h1>
-	<a class="btn btn-large btn-success" href="#" id="save-all">Save All</a>
+	<h1>{{ association.name |e}}</h1>
 </div>
-{% for lib in libs %}
-	{% if loop.index is divisibleby 3 %}
+{% for lib_name in libs.keys() %}
+	{% if loop.index0 is divisibleby 3 %}
 		<div class="row-fluid marketing">
 	{% endif %}
 			<div class="span4">
-				<h4>{{ lib.name }}</h4>
-				<textarea name="{{ lib.name }}" id="{{ lib.name }}" class="lib" rows=10>
-					<!-- todo: contents -->
-				</textarea>
+				<h4>
+					<a href="{{ url_for('view_lib', lib_id=libs[lib_name]['lib_id']) }}">
+						{{ lib_name |e}}
+					</a>
+				</h4>
+				<div class="lib-display">
+					<ul>
+						{% for rad in libs[lib_name]['rads'] %}
+							<li>{{ rad |e}}</li>
+						{% endfor %}
+					</ul>
+				</div>
 			</div>
-	{% if (loop.index + 1) is divisibleby 3 %}
+	{% if loop.index is divisibleby 3 or loop.last %}
 		</div>
 	{% endif %}
 {% else %}
@@ -27,7 +34,7 @@
 	<script src="/static/js/edit_association.js"></script>
 	<script>
 		$(document).ready(function() {
-			$( 'body' ).data('association_id', {{ association.association_id }})
+			$( 'body' ).data( 'new_lib_url', '{{ url_for('new_lib', association_id = association.association_id)}}' );
 		});
 	</script>
 {% endblock scripts %}

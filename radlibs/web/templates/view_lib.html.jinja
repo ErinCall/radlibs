@@ -1,0 +1,16 @@
+{% extends 'layout.html.jinja' %}
+{% block content %}
+<div class='jumbotron'>
+	<h1>{{ lib.name |e}}</h1>
+</div>
+<div class="row-fluid marketing">
+	<div class="span2"></div>
+	<div class="span4">
+		<ul>
+			{% for rad in rads %}
+				<li>{{ rad.rad |e}}</li>
+			{% endfor %}
+		</ul>
+	</div>
+</div>
+{% endblock content %}

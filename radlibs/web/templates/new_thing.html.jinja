@@ -2,7 +2,10 @@
 {% set active_page = 'manage' %}
 {% block content %}
 <div class="jumbotron">
-	<h1>Create New Association</h1>
+	<h1>Create New {{ thing_name }}</h1>
+	{% if error %}
+		<h4 class="error">{{ error |e}}</h4>
+	{% endif %}
 </div>
 <div class="fluid-row marketing">
 	<div class="span12">
@@ -10,6 +13,9 @@
 			<label for="name">Name: </label>
 			<input type="text" name="name" id="name">
 			<input type="submit" value="Create">
+			{% for name, value in (hidden_values or {}).iteritems(): %}
+				<input type="hidden" name="{{ name }}" value="{{ value }}">
+			{% endfor %}
 		</form>
 	</div>
 </div>

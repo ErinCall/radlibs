@@ -1,0 +1,153 @@
+from __future__ import unicode_literals
+
+from nose.tools import eq_, nottest
+from tests import TestCase, logged_in
+from radlibs.table.association import Association, UserAssociation
+from radlibs.table.user import User
+from radlibs.table.radlib import Rad, Lib
+from radlibs import Client
+
+from nose.plugins.skip import SkipTest
+
+
+class TestRadLib(TestCase):
+    @logged_in
+    def test_view_new_lib_page(self, user):
+        response = self.app.get('/lib/new/8')
+        eq_(response.status_code, 200)
+        assert 'Create New Lib' in response.data,\
+            "didn't see create-new-lib message"
+
+        assert '<input type="hidden" name="association_id" value="8">' in \
+            response.data, "Didn't see hidden association_id"
+
+    @logged_in
+    def test_create_new_lib(self, user):
+        session = Client().session()
+        association_id = self.create_association(user)
+
+        response = self.app.post(
+            '/lib/new/{0}'.format(association_id),
+            data={"name": "Rant"})
+        lib = session.query(Lib).one()
+        eq_(lib.name, 'Rant')
+
+        eq_(response.status_code, 302)
+        eq_(response.headers['Location'],
+            'http://localhost/lib/{0}'.format(lib.lib_id))
+
+    @logged_in
+    def test_create_new_lib__association_id_is_required(self, user):
+        response = self.app.post('/lib/new/8', data={"name": "Buffoonery"})
+        eq_(response.status_code, 404)
+
+    def test_create_new_lib__login_is_required(self):
+        response = self.app.post('/lib/new/8', data={"name": "Maleficence"})
+        eq_(response.status_code, 401)
+
+    @logged_in
+    def test_create_new_lib__user_must_be_in_association(self, user):
+        session = Client().session()
+        other_user = User()
+        session.add(user)
+        session.flush()
+        association_id = self.create_association(other_user)
+
+        response = self.app.post('/lib/new/{0}'.format(association_id),
+                                 data={'name': 'Sneakiness'})
+        eq_(response.status_code, 404)
+
+    @logged_in
+    def test_libcase_is_necessary(self, user):
+        association_id = self.create_association(user)
+
+        response = self.app.post('/lib/new/{0}'.format(association_id),
+                                 data={'name': 'not a valid name'})
+        eq_(response.status_code, 200, response.data)
+        assert "&#39;not a valid name&#39; is not a valid lib name." \
+            in response.data, "Didn't see error message"
+        assert "Lib names must be a single letter followed by only " \
+            "letters and underscores" in response.data, \
+            "Didn't see explanation"
+
+    @logged_in
+    def test_view_lib(self, user):
+        session = Client().session()
+        association_id = self.create_association(user)
+
+        lib = Lib(association_id=association_id, name='Rant')
+        session.add(lib)
+        session.flush()
+
+        session.add(Rad(rad="My spoon is too big!",
+                        lib_id=lib.lib_id,
+                        created_by=user.user_id))
+        session.add(Rad(rad="something something --Frank Herbert",
+                        lib_id=lib.lib_id,
+                        created_by=user.user_id))
+        session.flush()
+
+        response = self.app.get('/lib/{0}'.format(lib.lib_id))
+        eq_(response.status_code, 200, response.data)
+        assert "Rant" in response.data, "Didn't find lib name"
+        assert "My spoon is too big!" in response.data, \
+            "Didn't find first rant"
+        assert "something something --Frank Herbert" in response.data, \
+            "Didn't find second rant"
+
+    @logged_in
+    def test_view_lib_with_no_rads(self, user):
+        session = Client().session()
+        association_id = self.create_association(user)
+
+        lib = Lib(association_id=association_id, name='Location')
+        session.add(lib)
+        session.flush()
+
+        response = self.app.get('/lib/{0}'.format(lib.lib_id))
+        eq_(response.status_code, 200, response.data)
+        assert "Location" in response.data, "Didn't find lib name"
+
+    def test_view_lib_requires_user(self):
+        session = Client().session()
+        association = Association(name='Partytown')
+        session.add(association)
+        session.flush()
+        lib = Lib(name="Animal", association_id=association.association_id)
+        session.add(lib)
+        session.flush()
+
+        response = self.app.get('/lib/{0}'.format(lib.lib_id))
+        eq_(response.status_code, 404)
+
+    @logged_in
+    def test_view_lib_requires_correct_user(self, user):
+        session = Client().session()
+        other_user = User()
+        association_id = self.create_association(other_user)
+        lib = Lib(name="Song", association_id=association_id)
+        session.add(lib)
+        session.flush()
+
+        response = self.app.get('/lib/{0}'.format(lib.lib_id))
+        eq_(response.status_code, 404)
+
+    def test_view_lib__nonexistent_lib_id(self):
+        response = self.app.get('/lib/8')
+        eq_(response.status_code, 404)
+
+    @nottest
+    def create_association(self, user):
+        session = Client().session()
+        association = Association(name="Partytown")
+        session.add(user)
+        session.add(association)
+        session.flush()
+
+        user_association = UserAssociation(
+            user_id=user.user_id,
+            association_id=association.association_id)
+        session.add(user_association)
+        session.flush()
+
+        return association.association_id

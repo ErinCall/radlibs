@@ -4,7 +4,7 @@ from nose.tools import eq_
 from tests import TestCase, logged_in
 from radlibs.table.association import Association, UserAssociation
 from radlibs.table.user import User
-from radlibs.table.radlib import Lib
+from radlibs.table.radlib import Rad, Lib
 from radlibs import Client
 
 
@@ -33,6 +33,12 @@ class TestAssociation(TestCase):
         assert 'watercooler' in response.data, response.data
         assert 'codescouts' in response.data, response.data
         assert 'create a new association' in response.data, response.data
+
+    @logged_in
+    def test_view_new_association_page(self, user):
+        response = self.app.get('/association/new')
+        assert 'Create New Association' in response.data, \
+            "Didn't see new-association message"
 
     @logged_in
     def test_create_new_association(self, user):
@@ -69,7 +75,7 @@ class TestAssociation(TestCase):
         eq_(response.status_code, 404, response.data)
 
     @logged_in
-    def test_see_libs_in_an_association(self, user):
+    def test_see_libs_and_rads_in_an_association(self, user):
         session = Client().session()
         watercooler = Association(name='watercooler')
         rtk = Association(name='rtk')
@@ -85,11 +91,26 @@ class TestAssociation(TestCase):
 
         session.flush()
 
-        session.add(Lib(name='Rant', association_id=rtk.association_id))
-        session.add(Lib(name="Food",
-                        association_id=watercooler.association_id))
-        session.add(Lib(name="Animal",
-                        association_id=watercooler.association_id))
+        rant = Lib(name='Rant', association_id=rtk.association_id)
+        food = Lib(name="Food", association_id=watercooler.association_id)
+        animal = Lib(name="Animal", association_id=watercooler.association_id)
+        session.add(rant)
+        session.add(food)
+        session.add(animal)
+        session.flush()
+
+        session.add(Rad(
+            rad="Chili con carne",
+            lib_id=food.lib_id,
+            created_by=user.user_id))
+        session.add(Rad(
+            rad="<Animal> eggs",
+            lib_id=food.lib_id,
+            created_by=user.user_id))
+        session.add(Rad(
+            rad="Buzzhawk",
+            lib_id=animal.lib_id,
+            created_by=user.user_id))
 
         response = self.app.get('/association/{0}'.format(
             watercooler.association_id))
@@ -98,3 +119,30 @@ class TestAssociation(TestCase):
         assert 'Food' in response.data, "didn't see food"
         assert 'Animal' in response.data, "didn't see animal"
         assert "Rant" not in response.data, "saw some other association's lib"
+
+        assert 'Chili con carne' in response.data, "didn't see Chili"
+        assert '&lt;Animal&gt; eggs' in response.data, "didn't see eggs"
+        assert 'Buzzhawk' in response.data, "didn't see buzzhawk"
+
+    @logged_in
+    def test_see_libs_with_no_associated_rad(self, user):
+        session = Client().session()
+        watercooler = Association(name='watercooler')
+        session.add(watercooler)
+        session.flush()
+
+        user_association = UserAssociation(
+            association_id=watercooler.association_id,
+            user_id=user.user_id)
+        session.add(user_association)
+
+        rant = Lib(name='Rant', association_id=watercooler.association_id)
+        session.add(rant),
+        session.flush()
+
+        url = '/association/{0}'.format(watercooler.association_id)
+        response = self.app.get(url)
+
+        eq_(response.status_code, 200, response.data)
+
+        assert 'Rant' in response.data, "didn't see rant"
