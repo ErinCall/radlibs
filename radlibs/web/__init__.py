@@ -53,3 +53,20 @@ import radlibs.web.controllers.demo_eval
 import radlibs.web.controllers.login
 import radlibs.web.controllers.association
 import radlibs.web.controllers.radlib
+
+
+@app.context_processor
+def build_menu():
+    if g.user:
+        return {'menu': [
+            ('index', 'Home'),
+            ('live_demo', 'Try It Live'),
+            ('language', 'The Language'),
+            ('list_associations', 'Manage Associations'),
+        ]}
+    else:
+        return {'menu': [
+            ('index', 'Home'),
+            ('live_demo', 'Try It Live'),
+            ('language', 'The Language'),
+        ]}
