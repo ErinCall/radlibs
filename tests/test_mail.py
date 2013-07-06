@@ -12,7 +12,10 @@ from radlibs.table.user import User
 
 class TestSendVerificationMail(TestCase):
     @patch('radlibs.mail.smtplib')
-    def test_send_verification_mail(self, smtplib):
+    @patch('radlibs.mail.os')
+    def test_send_verification_mail(self, os, smtplib):
+        os.environ = {'SENDGRID_PASSWORD': 'letmein',
+                      'SENDGRID_USERNAME': 'itsme'}
         app.config['SERVER_NAME'] = 'localhost:5000'
         smtp = Mock()
         smtplib.SMTP.return_value = smtp
