@@ -96,7 +96,7 @@ def provider_for_identifier(identifier):
     parsed = urlparse.urlparse(identifier)
     return {
         'www.facebook.com': 'Facebook',
-        'www.live.coom': 'Live',
+        'www.live.com': 'Live',
         'www.twitter.com': 'Twitter',
         'www.amazon.com': 'Amazon',
         'www.google.com': 'Google',
