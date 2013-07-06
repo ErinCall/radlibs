@@ -48,7 +48,7 @@
 					var $list,
 						$li;
 
-					$list = $( '.span4 ul' );
+					$list = $( '.span8 ul' );
 					$parent.text( rad );
 					$li = $( '<li>' );
 					$li.append( $this );
