@@ -30,6 +30,7 @@ db_info = {}
 
 
 def setUpPackage():
+    app.config['SERVER_NAME'] = 'localhost'
     create_temp_database()
     temp_db_url = 'postgresql://localhost/%s' % db_info['temp_db_name']
     db_info['engine'] = create_engine(temp_db_url)

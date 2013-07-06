@@ -8,6 +8,7 @@ from radlibs.table.association import Association, UserAssociation
 from radlibs.table.radlib import Rad, Lib
 from radlibs.parser import parse, ParseError
 from radlibs.web.json_endpoint import json_endpoint, error_response
+from radlibs.web.breadcrumbs import breadcrumbs
 
 
 @app.route('/lib/new/<int:association_id>')
@@ -18,8 +19,7 @@ def new_lib(association_id):
     return render_template('new_thing.html.jinja',
                            thing_name='Lib',
                            hidden_values={'association_id': association_id},
-                           breadcrumbs=[
-                               'Associations', association.name, 'New Lib'])
+                           breadcrumbs=breadcrumbs(association, 'New Lib'))
 
 
 @app.route('/lib/new/<int:association_id>', methods=['POST'])
@@ -61,8 +61,7 @@ def view_lib(lib_id):
     return render_template('view_lib.html.jinja',
                            lib=lib,
                            rads=rads,
-                           breadcrumbs=[
-                               'Associations', association.name, lib.name])
+                           breadcrumbs=breadcrumbs(association, lib.name))
 
 
 @app.route('/lib/<int:lib_id>/rad/new', methods=['POST'])

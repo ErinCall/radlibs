@@ -35,8 +35,17 @@
             <div id="janrainEngageEmbed"></div>
             <h3 class="muted"><a href="/">Radlibs</a></h3>
             <span class="breadcrumbs">
-                {% for crumb in breadcrumbs %}
-                    {{ crumb |e}}{% if not loop.last %} &raquo; {% endif %}
+                {% for crumb, url in breadcrumbs %}
+                    {%if url %}
+                        <a href="{{ url }}">
+                    {% endif %}
+                            {{ crumb |e}}
+                    {%if url %}
+                        </a>
+                    {% endif %}
+                    {% if not loop.last %}
+                        &raquo;
+                    {% endif %}
                 {% endfor %}
             </span>
         </header>

@@ -8,6 +8,7 @@ from radlibs.web import app
 from radlibs.table.association import Association, UserAssociation
 from radlibs.table.radlib import Rad, Lib
 from radlibs.web.json_endpoint import error_response, json_endpoint
+from radlibs.web.breadcrumbs import breadcrumbs
 
 
 @app.route('/associations')
@@ -24,7 +25,7 @@ def list_associations():
 def new_association():
     return render_template('new_thing.html.jinja',
                            thing_name="Association",
-                           breadcrumbs=['Associations', 'New'])
+                           breadcrumbs=breadcrumbs('New'))
 
 
 @app.route('/association/new', methods=['POST'])
@@ -74,7 +75,7 @@ def manage_association(association_id):
     return render_template('manage_association.html.jinja',
                            association=association,
                            libs=libs,
-                           breadcrumbs=['Associations', association.name])
+                           breadcrumbs=breadcrumbs(association.name))
 
 
 @app.route('/association/<int:association_id>/test_radlib', methods=['POST'])
