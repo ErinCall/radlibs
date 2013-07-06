@@ -1,26 +1,29 @@
 (function() {
-	if (typeof window.janrain !== 'object') window.janrain = {};
-	if (typeof window.janrain.settings !== 'object') window.janrain.settings = {};
+	var $engage,
+		$some_script;
+	if (typeof window.janrain !== 'object') {
+		window.janrain = {};
+	}
+	if (typeof window.janrain.settings !== 'object') {
+		window.janrain.settings = {};
+	}
 
 	janrain.settings.tokenUrl = window.token_url;
 
-	function isReady() { janrain.ready = true; }
-	if (document.addEventListener) {
-		document.addEventListener("DOMContentLoaded", isReady, false);
-	} else {
-		window.attachEvent('onload', isReady);
-	}
+	$( document ).ready( function() {
+		janrain.ready = true;
+	});
 
-	var e = document.createElement('script');
-	e.type = 'text/javascript';
-	e.id = 'janrainAuthWidget';
+	$engage = $('<script>');
+	$engage.attr( 'type', 'text/javascript' );
+	$engage.attr( 'id', 'janrainAuthWidget' );
 
 	if (document.location.protocol === 'https:') {
-		e.src = 'https://rpxnow.com/js/lib/radlibs/engage.js';
+		$engage.attr( 'src', 'https://rpxnow.com/js/lib/radlibs/engage.js' );
 	} else {
-		e.src = 'http://widget-cdn.rpxnow.com/js/lib/radlibs/engage.js';
+		$engage.attr( 'src', 'http://widget-cdn.rpxnow.com/js/lib/radlibs/engage.js' );
 	}
 
-	var s = document.getElementsByTagName('script')[0];
-	s.parentNode.insertBefore(e, s);
+	$some_script = $( 'script' ).first();
+	$some_script.parent().prepend( $engage );
 })();
