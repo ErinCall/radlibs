@@ -16,3 +16,7 @@ def json_endpoint(fn):
             response = make_response(response)
         return response
     return wrapper
+
+
+def error_response(error):
+    return {'status': 'error', 'error': error}
