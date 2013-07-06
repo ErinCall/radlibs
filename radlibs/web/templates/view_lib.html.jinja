@@ -10,7 +10,14 @@
 			{% for rad in rads %}
 				<li>{{ rad.rad |e}}</li>
 			{% endfor %}
+			<li><a href="#" id="new-rad">Add new Rad</a></li>
 		</ul>
 	</div>
 </div>
 {% endblock content %}
+{% block scripts %}
+<script>
+	$( 'body' ).data( 'new_rad_url', "{{ url_for('new_rad', lib_id=lib.lib_id) }}" );
+</script>
+<script src="/static/js/view_lib.js"></script>
+{% endblock scripts %}

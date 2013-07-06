@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+import json
 from nose.tools import eq_, nottest
 from tests import TestCase, logged_in
 from radlibs.table.association import Association, UserAssociation
@@ -135,6 +136,68 @@ class TestRadLib(TestCase):
     def test_view_lib__nonexistent_lib_id(self):
         response = self.app.get('/lib/8')
         eq_(response.status_code, 404)
+
+    @logged_in
+    def test_add_new_rad(self, user):
+        session = Client().session()
+        association_id = self.create_association(user)
+        lib = Lib(name="Artist", association_id=association_id)
+        session.add(lib)
+        session.flush()
+
+        response = self.app.post('/lib/{0}/rad/new'.format(lib.lib_id),
+                                 data={'rad': 'Shania Twain'})
+        eq_(response.status_code, 200)
+
+        rad = session.query(Rad).one()
+        eq_(rad.created_by, user.user_id)
+        eq_(rad.lib_id, lib.lib_id)
+        eq_(rad.rad, 'Shania Twain')
+
+        body = json.loads(response.data)
+        eq_(body, {'status': 'ok'})
+
+    @logged_in
+    def test_add_new_rad__nonexistent_lib_id(self, user):
+        response = self.app.post('/lib/8/rad/new',
+                                 data={'rad': 'what is happening'})
+        eq_(response.status_code, 200)
+        body = json.loads(response.data)
+        eq_(body, {'status': 'error', 'error': 'no such lib'})
+
+    def test_add_new_rad__requires_user(self):
+        session = Client().session()
+        association = Association(name='Partytown')
+        session.add(association)
+        session.flush()
+        lib = Lib(name="Animal", association_id=association.association_id)
+        session.add(lib)
+        session.flush()
+
+        response = self.app.post('/lib/{0}/rad/new'.format(lib.lib_id),
+                                 data={'rad': 'what is happening'})
+        eq_(response.status_code, 200)
+        body = json.loads(response.data)
+        eq_(body, {
+            'status': 'error',
+            'error': 'login required'})
+
+    @logged_in
+    def test_add_new_rad__requires_correct_user(self, user):
+        session = Client().session()
+        other_user = User()
+        association_id = self.create_association(other_user)
+        lib = Lib(name="Song", association_id=association_id)
+        session.add(lib)
+        session.flush()
+
+        response = self.app.post('/lib/{0}/rad/new'.format(lib.lib_id),
+                                 data={'rad': '<Song_which_never_ends>'})
+        eq_(response.status_code, 200)
+        body = json.loads(response.data)
+        eq_(body, {
+            'status': 'error',
+            'error': 'no such lib'})
 
     @nottest
     def create_association(self, user):
