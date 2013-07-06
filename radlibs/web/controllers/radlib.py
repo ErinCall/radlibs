@@ -12,6 +12,9 @@ from radlibs.web.json_endpoint import json_endpoint, error_response
 
 @app.route('/lib/new/<int:association_id>')
 def new_lib(association_id):
+    if not g.user:
+        abort(401)
+    association = find_association(association_id)
     return render_template('new_thing.html.jinja',
                            thing_name='Lib',
                            hidden_values={'association_id': association_id})
@@ -32,13 +35,7 @@ def create_lib(association_id):
             "letter followed by only letters and underscores.".format(name),
         )
     session = Client().session()
-    associations = session.query(Association).\
-        join(UserAssociation, UserAssociation.association_id == association_id).\
-        filter(Association.association_id == association_id).\
-        filter(UserAssociation.user_id == g.user.user_id).\
-        all()
-    if not associations:
-        abort(404)
+    find_association(association_id)
     lib = Lib(association_id=association_id,
               name=name)
     session.add(lib)
@@ -78,10 +75,24 @@ def new_rad(lib_id):
 
 def find_lib(lib_id):
     return Client().session().query(Lib).\
-            join(Association,
-                 Association.association_id == Lib.association_id).\
+        join(Association,
+             Association.association_id == Lib.association_id).\
+        join(UserAssociation,
+             UserAssociation.association_id == Association.association_id).\
+        filter(UserAssociation.user_id == g.user.user_id).\
+        filter(Lib.lib_id == lib_id).\
+        one()
+
+
+def find_association(association_id):
+    session = Client().session()
+    try:
+        association = session.query(Association).\
             join(UserAssociation,
                  UserAssociation.association_id == Association.association_id).\
+            filter(Association.association_id == association_id).\
             filter(UserAssociation.user_id == g.user.user_id).\
-            filter(Lib.lib_id == lib_id).\
             one()
+    except NoResultFound:
+        abort(404)
+    return association

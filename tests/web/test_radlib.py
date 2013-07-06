@@ -8,19 +8,30 @@ from radlibs.table.user import User
 from radlibs.table.radlib import Rad, Lib
 from radlibs import Client
 
-from nose.plugins.skip import SkipTest
-
 
 class TestRadLib(TestCase):
     @logged_in
     def test_view_new_lib_page(self, user):
-        response = self.app.get('/lib/new/8')
+        association_id = self.create_association(user)
+        response = self.app.get('/lib/new/{0}'.format(association_id))
         eq_(response.status_code, 200)
         assert 'Create New Lib' in response.data,\
             "didn't see create-new-lib message"
 
-        assert '<input type="hidden" name="association_id" value="8">' in \
-            response.data, "Didn't see hidden association_id"
+        assert '<input type="hidden" name="association_id" value="{0}">'.\
+            format(association_id) in response.data, \
+            "Didn't see hidden association_id"
+
+    def test_view_new_lib_requires_login(self):
+        response = self.app.get('/lib/new/8')
+        eq_(response.status_code, 401)
+
+    @logged_in
+    def test_view_new_lib_requires_correct_login(self, user):
+        other_user = User()
+        association_id = self.create_association(other_user)
+        response = self.app.get('/lib/new/{0}'.format(association_id))
+        eq_(response.status_code, 404)
 
     @logged_in
     def test_create_new_lib(self, user):
