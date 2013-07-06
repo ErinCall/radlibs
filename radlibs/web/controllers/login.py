@@ -42,7 +42,6 @@ def token_url():
 
     db_session = Client().session()
     try:
-        print repr(identifier)
         user = db_session.query(User).\
             filter(User.identifier == identifier).\
             one()
@@ -59,12 +58,12 @@ def token_url():
                     existing_provider=provider)
             user = User(email=email, identifier=identifier)
             db_session.add(user)
-            session['user'] = {'identifier': identifier, 'email': email}
         else:
             session['partial_user'] = {'identifier': identifier}
             return redirect(url_for('show_registration',
                                     redirect_uri=redirect_uri))
 
+    session['user'] = {'identifier': identifier, 'email': email}
     return redirect(redirect_uri)
 
 
@@ -84,6 +83,14 @@ def register():
     db_session.add(user)
     session['user'] = {'email': user.email, 'identifier': user.identifier}
     return redirect(request.form['redirect_uri'])
+
+
+@app.route('/logout')
+def logout():
+    if 'user' in session:
+        del(session['user'])
+    return redirect(url_for('index'))
+
 
 def provider_for_identifier(identifier):
     parsed = urlparse.urlparse(identifier)

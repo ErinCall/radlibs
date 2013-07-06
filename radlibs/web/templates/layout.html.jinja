@@ -56,6 +56,9 @@
             <p>
                 &copy; Andrew Lorente 2013 &middot;
                 <a href="{{ url_for('privacy_policy') }}">Privacy Policy</a>
+                {% if 'user' in session %}
+                    <span class="logout"><a href="{{ url_for('logout') }}">Log out</a></span>
+                {% endif %}
             </p>
         </div>
 

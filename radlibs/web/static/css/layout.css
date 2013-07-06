@@ -58,6 +58,11 @@ body {
     background-image: linear-gradient(to bottom, #62C462, #51A351);
 }
 
+/* footer */
+.logout {
+    float: right;
+}
+
 /* association manage */
 .lib-display {
     height: 220px;
