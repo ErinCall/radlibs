@@ -1,8 +1,9 @@
 from __future__ import unicode_literals
 
-from nose.tools import eq_
+from mock import patch
+from nose.tools import eq_, assert_raises
 
-from radlibs.parser import parse, Text, Lib
+from radlibs.parser import parse, Text, Lib, ParseError
 
 from tests import TestCase, with_libs
 
@@ -61,3 +62,28 @@ class TestParser(TestCase):
         radlib = unicode(rad)
         assert len(radlib) > 3000, radlib
         assert len(radlib) < 9000, radlib
+
+    @with_libs(test_libs())
+    def test_parse_error(self):
+        plaintext = 'error>'
+        with assert_raises(ParseError) as error:
+            parse(plaintext)
+        eq_(error.exception.message,
+            "Unexpected token '>' at line 1 character 6 of 'error>'")
+
+    def test_deeply_nested_parse_error(self):
+        libs = {
+            'Outermost': ['into <Middle>'],
+            'Middle': ['into <Inner>'],
+            'Inner': ['into <Broken>'],
+            'Broken': ['HAY GUISE>'],
+        }
+        load_lib = lambda lib_name: libs[lib_name]
+        with patch('radlibs.parser.load_lib', load_lib):
+            with assert_raises(ParseError) as error:
+                print unicode(parse('<Outermost>'))
+
+        eq_(error.exception.message,
+            "Unexpected token '>' at line 1 character 10 of 'HAY GUISE>' "
+            "(found inside Broken) (found inside Inner) (found inside Middle) "
+            "(found inside Outermost)")

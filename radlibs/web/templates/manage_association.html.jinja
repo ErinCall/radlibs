@@ -3,6 +3,10 @@
 {% block content %}
 <div class="jumbotron">
 	<h1>{{ association.name |e}}</h1>
+	<form action="" id='radlib-form'>
+		<input type="text" id="radlib" value="">
+	</form>
+    <a class="btn btn-large btn-success" href="#" id="fire">Evaluate!</a>
 </div>
 {% for lib_name in libs.keys() %}
 	{% if loop.index0 is divisibleby 3 %}
@@ -35,6 +39,7 @@
 	<script>
 		$(document).ready(function() {
 			$( 'body' ).data( 'new_lib_url', '{{ url_for('new_lib', association_id = association.association_id)}}' );
+			$( 'body' ).data( 'test_radlib_url', "{{ url_for('test_radlib', association_id = association.association_id) }}" );
 		});
 	</script>
 {% endblock scripts %}

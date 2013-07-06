@@ -2,13 +2,11 @@ from __future__ import unicode_literals
 
 from flask import render_template, g, url_for, redirect, request, abort
 from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy.exc import IntegrityError
-from parsimonious.exceptions import IncompleteParseError
 from radlibs import Client
 from radlibs.web import app
 from radlibs.table.association import Association, UserAssociation
 from radlibs.table.radlib import Rad, Lib
-from radlibs.parser import parse
+from radlibs.parser import parse, ParseError
 from radlibs.web.json_endpoint import json_endpoint, error_response
 
 
@@ -26,7 +24,7 @@ def create_lib(association_id):
     name = request.form['name']
     try:
         parse('<{0}>'.format(name))
-    except IncompleteParseError:
+    except ParseError:
         return render_template(
             'new_thing.html.jinja', thing_name='Lib',
             hidden_values={'association_id': association_id},

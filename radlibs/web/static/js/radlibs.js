@@ -91,6 +91,43 @@
 		return $div;
 	};
 
+	window.radlibs.display_radlib = function(radlib) {
+		var $jumbotron,
+			$h1,
+			$error;
+
+		$jumbotron = $( '.jumbotron' );
+		$h1 = $jumbotron.find( 'h1' );
+		$error = $jumbotron.find( 'h4' );
+		$error.remove();
+
+		if ( $h1.length === 0 ) {
+			$h1 = $( '<h1>' );
+			$jumbotron.prepend( $h1 );
+		}
+
+		$h1.text( radlib );
+	};
+
+	window.radlibs.display_error = function( error ) {
+		var $jumbotron,
+			$h1,
+			$error;
+
+		$jumbotron = $( '.jumbotron' );
+		$h1 = $jumbotron.find( 'h1' );
+		$error = $jumbotron.find( 'h4' );
+		$h1.remove();
+
+		if ( $error.length === 0 ) {
+			$error = $( '<h4>' );
+			$error.attr('class', 'error');
+			$jumbotron.prepend( $error );
+		}
+
+		$error.text( error );
+	};
+
 	show_signin_widget = function(event) {
 		event.preventDefault();
 		$( '#janrainEngageEmbed' ).toggle();

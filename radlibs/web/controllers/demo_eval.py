@@ -3,8 +3,7 @@ from __future__ import unicode_literals
 import json
 from mock import patch
 from flask import request
-from parsimonious.exceptions import IncompleteParseError
-from radlibs.parser import parse
+from radlibs.parser import parse, ParseError
 from radlibs.web import app
 from radlibs.web.json_endpoint import json_endpoint, error_response
 
@@ -29,8 +28,8 @@ def demo_eval():
             radlib = unicode(parse(rad))
         except KeyError as e:
             return error_response("No such Library '{0}'".format(e.message))
-        except IncompleteParseError as e:
-            return error_response(unicode(e))
+        except ParseError as e:
+            return error_response(e.message)
 
     return {
         'status': 'ok',

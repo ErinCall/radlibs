@@ -3,9 +3,11 @@ from __future__ import unicode_literals
 from flask import render_template, g, url_for, redirect, request, abort
 from sqlalchemy.orm.exc import NoResultFound
 from radlibs import Client
+from radlibs.parser import parse, ParseError
 from radlibs.web import app
 from radlibs.table.association import Association, UserAssociation
 from radlibs.table.radlib import Rad, Lib
+from radlibs.web.json_endpoint import error_response, json_endpoint
 
 
 @app.route('/associations')
@@ -70,3 +72,29 @@ def manage_association(association_id):
     return render_template('manage_association.html.jinja',
                            association=association,
                            libs=libs)
+
+
+@app.route('/association/<int:association_id>/test_radlib', methods=['POST'])
+@json_endpoint
+def test_radlib(association_id):
+    session = Client().session()
+    if not g.user:
+        return error_response('login required')
+    associations = session.query(Association).\
+        join(UserAssociation,
+             Association.association_id == UserAssociation.association_id).\
+        filter(Association.association_id == association_id).\
+        filter(UserAssociation.user_id == g.user.user_id).\
+        count()
+
+    if not associations:
+        return error_response('no such association')
+
+    g.association_id = association_id
+    try:
+        radlib = unicode(parse(request.form['rad']))
+    except KeyError as e:
+        return error_response("no such lib '{0}'".format(e.message))
+    except ParseError as e:
+        return error_response(e.message)
+    return {'status': 'ok', 'radlib': radlib}

@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from random import choice
+from parsimonious.exceptions import IncompleteParseError
 from parsimonious.grammar import Grammar
 from parsimonious.nodes import NodeVisitor
 
@@ -16,6 +17,10 @@ grammar = Grammar("""
     letter       = anglebracket / ~"[^<>]"
     anglebracket = "\\<" / "\\>"
 """)
+
+
+class ParseError(StandardError):
+    pass
 
 
 class Node(object):
@@ -78,6 +83,9 @@ class Lib(Node):
         try:
             recursion['depth'] += 1
             return unicode(parse(choice(lib)))
+        except ParseError as e:
+            error = "{0} (found inside {1})".format(e.message, self.lib_name)
+            raise ParseError(error)
         finally:
             recursion['depth'] -= 1
 
@@ -103,4 +111,13 @@ class RadParser(NodeVisitor):
 
 
 def parse(plaintext):
-    return RadParser(plaintext).rad
+    try:
+        return RadParser(plaintext).rad
+    except IncompleteParseError as e:
+        lines = e.text.split("\n")
+        error = "Unexpected token '{0}' at line {1} character {2} of '{3}'".\
+            format(lines[e.line() - 1][e.pos],
+                   e.line(),
+                   e.pos + 1,
+                   e.text)
+        raise ParseError(error)

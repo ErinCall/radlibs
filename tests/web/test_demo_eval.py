@@ -4,8 +4,6 @@ import json
 from nose.tools import eq_
 from tests import TestCase
 
-from nose.plugins.skip import SkipTest
-
 
 class TestDemoEval(TestCase):
     def test_a_simple_eval(self):
@@ -42,9 +40,7 @@ class TestDemoEval(TestCase):
         body = json.loads(response.data)
         eq_(body, {
             'status': 'error',
-            'error': "Rule 'contents' matched in its entirety, but it didn't "
-                     "consume all the text. The non-matching portion of the "
-                     "text begins with '<Open' (line 1, column 1)."
+            'error': "Unexpected token '<' at line 1 character 1 of '<Open'",
             })
 
     def test_missing_libs_param(self):

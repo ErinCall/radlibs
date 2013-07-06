@@ -1,11 +1,14 @@
 from __future__ import unicode_literals
 
+import json
 from nose.tools import eq_
 from tests import TestCase, logged_in
 from radlibs.table.association import Association, UserAssociation
 from radlibs.table.user import User
 from radlibs.table.radlib import Rad, Lib
 from radlibs import Client
+
+from nose.plugins.skip import SkipTest
 
 
 class TestAssociation(TestCase):
@@ -146,3 +149,107 @@ class TestAssociation(TestCase):
         eq_(response.status_code, 200, response.data)
 
         assert 'Rant' in response.data, "didn't see rant"
+
+    @logged_in
+    def test_test_radlib(self, user):
+        association = Association(name="codescouts")
+        session = Client().session()
+        session.add(association)
+        session.flush()
+        user_association = UserAssociation(
+            user_id=user.user_id, association_id=association.association_id)
+        session.add(user_association)
+
+        animal = Lib(name="Animal", association_id=association.association_id)
+        food = Lib(name="Food", association_id=association.association_id)
+        session.add(animal)
+        session.add(food)
+        session.flush()
+
+        session.add(Rad(lib_id=animal.lib_id,
+                        created_by=user.user_id,
+                        rad="Ostrich"))
+        session.add(Rad(lib_id=food.lib_id,
+                        created_by=user.user_id,
+                        rad="<Animal> eggs"))
+        session.flush()
+
+        response = self.app.post(
+            '/association/{0}/test_radlib'.format(association.association_id),
+            data={'rad': 'I ate some <Food>'})
+        eq_(response.status_code, 200)
+        body = json.loads(response.data)
+        eq_(body, {
+            'status': 'ok',
+            'radlib': 'I ate some Ostrich eggs'})
+
+    def test_test_radlib_requires_login(self):
+        session = Client().session()
+        association = Association(name="somebody's private stuff")
+        session.add(association)
+        session.flush()
+        response = self.app.post(
+            '/association/{0}/test_radlib'.format(association.association_id),
+            data={'rad': 'I ate some <Food>'})
+        eq_(response.status_code, 200)
+        body = json.loads(response.data)
+        eq_(body, {
+            'status': 'error',
+            'error': 'login required'})
+
+    @logged_in
+    def test_test_radlib_requires_correct_user(self, user):
+        session = Client().session()
+        other_user = User()
+        association = Association(name="my stuff")
+        session.add(other_user)
+        session.add(association)
+        session.flush()
+        session.add(UserAssociation(user_id=other_user.user_id,
+                                    association_id=association.association_id))
+
+        response = self.app.post(
+            '/association/{0}/test_radlib'.format(association.association_id),
+            data={'rad': 'I ate some <Food>'})
+        eq_(response.status_code, 200)
+        body = json.loads(response.data)
+        eq_(body, {
+            'status': 'error',
+            'error': 'no such association'})
+
+    @logged_in
+    def test_test_radlib_with_unknown_lib(self, user):
+        session = Client().session()
+        association = Association(name="pdx python")
+        session.add(association)
+        session.flush()
+        session.add(UserAssociation(user_id=user.user_id,
+                                    association_id=association.association_id))
+
+        response = self.app.post(
+            '/association/{0}/test_radlib'.format(association.association_id),
+            data={'rad': 'I ate some <Food>'})
+        eq_(response.status_code, 200)
+        body = json.loads(response.data)
+        eq_(body, {
+            'status': 'error',
+            'error': "no such lib 'Food'"})
+
+    @logged_in
+    def test_test_radlib_with_syntactically_invalid_rad(self, user):
+        session = Client().session()
+        association = Association(name="pdx python")
+        session.add(association)
+        session.flush()
+        session.add(UserAssociation(user_id=user.user_id,
+                                    association_id=association.association_id))
+
+        response = self.app.post(
+            '/association/{0}/test_radlib'.format(association.association_id),
+            data={'rad': 'I ate some Food>'})
+        eq_(response.status_code, 200)
+        body = json.loads(response.data)
+        eq_(body, {
+            'status': 'error',
+            'error': "Unexpected token '>' at line 1 character 16 of "
+            "'I ate some Food>'"})

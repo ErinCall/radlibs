@@ -25,52 +25,15 @@
 				var body = JSON.parse( data );
 
 				if ( body[ 'status' ] === 'ok' ) {
-					display_radlib( body[ 'radlib' ] );
+					radlibs.display_radlib( body[ 'radlib' ] );
 				} else {
-					display_error( body[ 'error' ] );
+					radlibs.display_error( body[ 'error' ] );
 				}
 			},
 			error: function(jqXHR, status, errorThrown) {
 				alert( errorThrown );
 			}
 		});
-	};
-
-	display_radlib = function(radlib) {
-		var $jumbotron,
-			$h1,
-			$error;
-
-		$jumbotron = $( '.jumbotron' );
-		$h1 = $jumbotron.find( 'h1' );
-		$error = $jumbotron.find( 'h4' );
-		$error.remove();
-
-		if ( $h1.length === 0 ) {
-			$h1 = $( '<h1>' );
-			$jumbotron.prepend( $h1 );
-		}
-
-		$h1.text( radlib );
-	};
-
-	display_error = function( error ) {
-		var $jumbotron,
-			$h1,
-			$error;
-
-		$jumbotron = $( '.jumbotron' );
-		$h1 = $jumbotron.find( 'h1' );
-		$error = $jumbotron.find( 'h4' );
-		$h1.remove();
-
-		if ( $error.length === 0 ) {
-			$error = $( '<h4>' );
-			$error.attr('class', 'error');
-			$jumbotron.prepend( $error );
-		}
-
-		$error.text( error );
 	};
 
 	new_lib = function () {
