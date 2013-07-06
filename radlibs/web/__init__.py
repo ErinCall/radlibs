@@ -67,3 +67,8 @@ def build_menu():
             ('live_demo', 'Try It Live'),
             ('language', 'The Language'),
         ]}
+
+
+@app.context_processor
+def breadcrumbs():
+    return {'breadcrumbs': []}

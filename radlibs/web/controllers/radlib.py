@@ -17,7 +17,9 @@ def new_lib(association_id):
     association = find_association(association_id)
     return render_template('new_thing.html.jinja',
                            thing_name='Lib',
-                           hidden_values={'association_id': association_id})
+                           hidden_values={'association_id': association_id},
+                           breadcrumbs=[
+                               'Associations', association.name, 'New Lib'])
 
 
 @app.route('/lib/new/<int:association_id>', methods=['POST'])
@@ -52,8 +54,15 @@ def view_lib(lib_id):
         lib = find_lib(lib_id)
     except NoResultFound:
         abort(404)
+    association = session.query(Association).\
+        filter(Association.association_id == lib.association_id).\
+        one()
     rads = session.query(Rad).filter(Rad.lib_id == lib_id).all()
-    return render_template('view_lib.html.jinja', lib=lib, rads=rads)
+    return render_template('view_lib.html.jinja',
+                           lib=lib,
+                           rads=rads,
+                           breadcrumbs=[
+                               'Associations', association.name, lib.name])
 
 
 @app.route('/lib/<int:lib_id>/rad/new', methods=['POST'])

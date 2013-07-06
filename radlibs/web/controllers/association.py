@@ -22,7 +22,9 @@ def list_associations():
 
 @app.route('/association/new')
 def new_association():
-    return render_template('new_thing.html.jinja', thing_name="Association")
+    return render_template('new_thing.html.jinja',
+                           thing_name="Association",
+                           breadcrumbs=['Associations', 'New'])
 
 
 @app.route('/association/new', methods=['POST'])
@@ -71,7 +73,8 @@ def manage_association(association_id):
             libs[lib_name]['rads'].append(rad)
     return render_template('manage_association.html.jinja',
                            association=association,
-                           libs=libs)
+                           libs=libs,
+                           breadcrumbs=['Associations', association.name])
 
 
 @app.route('/association/<int:association_id>/test_radlib', methods=['POST'])

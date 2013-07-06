@@ -58,6 +58,14 @@ body {
     background-image: linear-gradient(to bottom, #62C462, #51A351);
 }
 
+header h3 {
+    margin-bottom: 0px;
+}
+
+header .breadcrumbs {
+    position: absolute;
+}
+
 /* footer */
 .logout {
     float: right;
