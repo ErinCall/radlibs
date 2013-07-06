@@ -10,14 +10,14 @@ from radlibs.table.radlib import Rad, Lib
 from radlibs.parser import parse
 
 
-@app.route('/lib/new/<association_id>')
+@app.route('/lib/new/<int:association_id>')
 def new_lib(association_id):
     return render_template('new_thing.html.jinja',
                            thing_name='Lib',
                            hidden_values={'association_id': association_id})
 
 
-@app.route('/lib/new/<association_id>', methods=['POST'])
+@app.route('/lib/new/<int:association_id>', methods=['POST'])
 def create_lib(association_id):
     if not g.user:
         abort(401)
@@ -46,7 +46,7 @@ def create_lib(association_id):
     return redirect(url_for('view_lib', lib_id=lib.lib_id))
 
 
-@app.route('/lib/<lib_id>')
+@app.route('/lib/<int:lib_id>')
 def view_lib(lib_id):
     if not g.user:
         abort(404)

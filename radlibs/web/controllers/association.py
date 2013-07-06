@@ -40,7 +40,7 @@ def create_association():
                             association_id=association.association_id))
 
 
-@app.route('/association/<association_id>')
+@app.route('/association/<int:association_id>')
 def manage_association(association_id):
     session = Client().session()
     try:
