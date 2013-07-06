@@ -8,7 +8,12 @@ setup(name="radlibs",
       author="Andrew Lorente",
       author_email="andrew.lorente@gmail.com",
       url="github.com/andrewlorente/radsnap",
-      packages=['radlibs', 'radlibs.web'],
+      packages=[
+          'radlibs',
+          'radlibs.web',
+          'radlibs.web.controllers',
+          'radlibs.table',
+      ],
       scripts=[],
       install_requires=[
           "parsimonious",
