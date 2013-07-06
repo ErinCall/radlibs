@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 import json
 from mock import patch, Mock
 from nose.tools import eq_
-from radlibs.table.user import User
+from radlibs.table.user import User, EmailVerificationToken
 from radlibs import Client
 from tests import TestCase
 
@@ -55,12 +55,14 @@ class TestLogin(TestCase):
         user = Client().session().query(User).one()
         eq_(user.email, 'yeezy@umg.com')
         eq_(user.identifier, 'facebook.com/yeezy')
+        assert user.email_verified_at, "User email wasn't verified"
 
+    @patch('radlibs.web.controllers.login.send_verification_mail')
     @patch('radlibs.web.controllers.login.os')
     @patch('radlibs.web.controllers.login.requests')
-    def test_log_in_with_a_provider_that_does_not_supply_email(self,
-                                                               requests,
-                                                               os):
+    def test_log_in_with_a_provider_that_does_not_supply_email(
+            self, requests, os, send_verification_mail):
+        session = Client().session()
         os.environ = {'ENGAGE_API_KEY': 'aoeu'}
         response = Mock()
         requests.get.return_value = response
@@ -85,9 +87,36 @@ class TestLogin(TestCase):
         eq_(response.status_code, 302, response.data)
         eq_(response.headers['Location'], 'http://localhost/language')
 
-        user = Client().session().query(User).one()
+        user = session.query(User).one()
         eq_(user.email, 'tpain@umg.com')
         eq_(user.identifier, 'twitter.com/tpain')
+        eq_(user.email_verified_at, None)
+
+        token = session.query(EmailVerificationToken).one()
+        send_verification_mail.assert_called_once_with(
+            'http://localhost/verify_email/{0}'.format(token.token))
+
+    def test_verify_email(self):
+        session = Client().session()
+        user = User()
+        session.add(user)
+        session.flush()
+        token = EmailVerificationToken.generate(user)
+
+        response = self.app.get('/verify_email/{0}'.format(token.token))
+        eq_(response.status_code, 200, response.data)
+        assert 'Thanks!' in response.data, 'response was rude'
+
+        del(user)
+        user = session.query(User).one()
+        assert user.email_verified_at, "email wasn't verified!"
+
+        tokens = session.query(EmailVerificationToken).all()
+        eq_(tokens, [])
+
+    def test_verify_email__invalid_token(self):
+        response = self.app.get('/verify_email/badcafe')
+        eq_(response.status_code, 404, response.data)
 
     @patch('radlibs.web.controllers.login.os')
     @patch('radlibs.web.controllers.login.requests')

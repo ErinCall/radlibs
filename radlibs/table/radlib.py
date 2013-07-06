@@ -1,11 +1,11 @@
 from __future__ import unicode_literals
 
-import datetime
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 from radlibs.table.user import User
 from radlibs.table.association import Association
+from radlibs.date_utils import utcnow
 
 
 class Lib(Base):
@@ -28,5 +28,4 @@ class Rad(Base):
     def __init__(self, *args, **kwargs):
         super(Rad, self).__init__(*args, **kwargs)
         if self.created_at is None:
-            self.created_at = datetime.datetime.utcnow().\
-                strftime('%Y%m%d %H:%M:%S')
+            self.created_at = utcnow()
