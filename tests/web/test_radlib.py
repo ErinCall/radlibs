@@ -56,9 +56,6 @@ class TestRadLib(TestCase):
             'status': 'error',
             'error': "'not a valid name' is not a valid lib name",
             })
-        assert "Lib names must be a single letter followed by only " \
-            "letters and underscores" in response.data, \
-            "Didn't see explanation"
 
     @logged_in
     def test_view_lib(self, user):

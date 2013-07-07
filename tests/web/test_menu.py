@@ -28,8 +28,10 @@ class TestMenu(TestCase):
         with patch('radlibs.web.g', g):
             eq_(build_menu(), {
                 'menu': [
+                    ('api', 'The Api'),
                     ('language', 'The Language'),
                     ('list_associations', 'Associations'),
+                    ('profile', 'Profile')
                 ]})
         response = self.app.get('/')
         assert 'The Language' in response.data, "didn't see language"

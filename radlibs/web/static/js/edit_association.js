@@ -48,6 +48,11 @@
 						lib_id = body[ 'lib_id' ];
 						document.location = '/lib/' + lib_id;
 					} else {
+						if ( ! ~ body[ 'error' ].indexOf( 'not a valid lib name' )) {
+							radlibs.display_error(
+								body[ 'error' ] + "\nLib names must be a single capital letter followed by only lower case letters and underscores."
+							);
+						}
 						radlibs.display_error( body[ 'error' ]);
 					}
 				},
