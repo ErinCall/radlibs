@@ -151,7 +151,7 @@ class TestLogin(TestCase):
         user = User(api_key='hurfdurf')
         session.add(user)
         session.flush()
-        time = datetime.datetime.utcnow().strftime('%Y%m%d %H:%M:%S')
+        time = datetime.datetime.utcnow().strftime('%Y%m%dT%H:%M:%S')
         endpoint = '/test_authorization'
         plaintext = "{0}\nother_param: frabjous\n{1}\n{2}".format(
             time, endpoint, 'hurfdurf')
@@ -169,7 +169,7 @@ class TestLogin(TestCase):
         response = self.app.post(
             '/test_authorization', data={'user_id': 8,
                                          'signature': 'woop woop',
-                                         'time': '20130706 08:29:00',
+                                         'time': '20130706T08:29:00',
                                          'other_param': 'frabjous'})
         eq_(response.status_code, 200, response.data)
         body = json.loads(response.data)
@@ -180,7 +180,7 @@ class TestLogin(TestCase):
         user = User()
         session.add(user)
         session.flush()
-        time = datetime.datetime.utcnow().strftime('%Y%m%d %H:%M:%S')
+        time = datetime.datetime.utcnow().strftime('%Y%m%dT%H:%M:%S')
         signature = "mloop droop"
         response = self.app.post(
             '/test_authorization', data={'user_id': user.user_id,
@@ -196,7 +196,7 @@ class TestLogin(TestCase):
         user = User(api_key='hurfdurf')
         session.add(user)
         session.flush()
-        time = '20010101 01:01:01'
+        time = '20010101T01:01:01'
         endpoint = '/test_authorization'
         plaintext = "{0}\nother_param: frabjous\n{1}\n{2}".format(
             time, endpoint, 'hurfdurf')

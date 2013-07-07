@@ -1,0 +1,22 @@
+{% set active_page = 'profile' %}
+{% extends 'layout.html.jinja' %}
+{% block content %}
+<div class="jumbotron"><h1>Your Profile</h1></div>
+<div class="marketing row-fluid">
+    <div class="span2"></div>
+    <div class="span8">Your email address is {{ g.user.email }}.</div>
+</div>
+<div class="marketing row-fluid">
+    <div class="span2"></div>
+    <div class="span8">
+    {% if g.user.api_key %}
+        Your api key is {{ g.user.api_key }}.
+    {% else %}
+        <form method="POST" action="{{ url_for('get_api_key') }}">
+            You don't have an api key.
+            <input type="submit" value="Get an api key">
+        </form>
+    {% endif %}
+    </div>
+</div>
+{% endblock content %}

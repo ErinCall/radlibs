@@ -54,7 +54,7 @@ def before_request():
         user_id = params.pop('user_id')[0]
         time = params.pop('time')[0]
         try:
-            client_time = datetime.datetime.strptime(time, '%Y%m%d %H:%M:%S')
+            client_time = datetime.datetime.strptime(time, '%Y%m%dT%H:%M:%S')
         except ValueError:
             return
         current_time = datetime.datetime.utcnow()
@@ -69,8 +69,8 @@ def before_request():
         if not user.api_key:
             return
         plaintext = time + "\n"
-        for (key, value) in params.iteritems():
-            plaintext = plaintext + "{0}: {1}\n".format(key, value[0])
+        for key in sorted(params.keys()):
+            plaintext = plaintext + "{0}: {1}\n".format(key, params[key][0])
         plaintext = plaintext + request.path + "\n"
         plaintext = plaintext + user.api_key
         calculated_signature = sha.sha(plaintext).hexdigest()
@@ -106,6 +106,7 @@ import radlibs.web.controllers.demo_eval
 import radlibs.web.controllers.login
 import radlibs.web.controllers.association
 import radlibs.web.controllers.radlib
+import radlibs.web.controllers.profile
 
 
 @app.context_processor
@@ -114,6 +115,7 @@ def build_menu():
         return {'menu': [
             ('language', 'The Language'),
             ('list_associations', 'Associations'),
+            ('profile', 'Profile'),
         ]}
     else:
         return {'menu': [

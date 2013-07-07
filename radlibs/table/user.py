@@ -15,6 +15,11 @@ class User(Base):
     email_verified_at = Column(DateTime)
     api_key = Column(String)
 
+    def generate_api_key(self):
+        key = uuid()
+        self.api_key = key.hex
+        Client().session().add(self)
+
 
 class EmailVerificationToken(Base):
     __tablename__ = 'email_verification_token'
