@@ -73,3 +73,30 @@ The Radlibs support team
                       plaintext,
                       html=html)
     message.send()
+
+
+def send_invitation_mail(invitee, inviter, association_name, invite_url):
+    plaintext = """
+Hello,
+
+Today is a day you'll remember for the rest of your life! {0} has invited you to the '{1}' Association on http://radlibs.info!
+
+Please copy and paste the following URL into your favorite web browser to start radlibbing...
+
+{2}
+
+Thanks,
+The Radlibs welcome wagon
+""".format(inviter, association_name, invite_url)
+
+    html = render_template('invitation_mail.html.jinja',
+                           inviter=inviter,
+                           association_name=association_name,
+                           invite_url=invite_url)
+
+    message = Message("You've been invited!",
+                      [invitee],
+                      plaintext,
+                      html=html,
+                      from_address='welcome@radlibs.info')
+    message.send()

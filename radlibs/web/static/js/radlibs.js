@@ -5,17 +5,17 @@
 		window.radlibs = {};
 	}
 
-	window.radlibs.row_with_vacancy = function() {
+	window.radlibs.row_with_vacancy = function( row_class ) {
 		var $last_row,
 			entries_in_row,
 			$new_row;
 
-		$last_row = $( 'div.row-fluid' ).last();
+		$last_row = $( 'div.' + row_class ).last();
 		entries_in_row = $last_row.find( 'div.span4' ).length;
 		if ( entries_in_row >= 3 ) {
 			$new_row = $( '<div>' );
-			$new_row.addClass( 'row-fluid marketing' );
-			$( '#page-content' ).append( $new_row );
+			$new_row.addClass( 'row-fluid marketing ' + row_class );
+			$last_row.after( $new_row );
 			return $new_row;
 		} else {
 			return $last_row;
@@ -36,7 +36,7 @@
 		$button.css( 'padding-bottom', '110px' );
 		$button.text( '+' );
 		$button.click( click_handler );
-		window.radlibs.row_with_vacancy().append( $button );
+		window.radlibs.row_with_vacancy( 'lib-row' ).append( $button );
 	};
 
 	window.radlibs.collect_libs = function() {
@@ -85,8 +85,8 @@
 		$div.append( $header );
 		$div.append( $textarea );
 
-		radlibs.row_with_vacancy().append( $div );
-		radlibs.row_with_vacancy().append( $new_lib_button );
+		radlibs.row_with_vacancy( 'lib-row' ).append( $div );
+		radlibs.row_with_vacancy( 'lib-row' ).append( $new_lib_button );
 
 		return $div;
 	};

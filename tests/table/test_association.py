@@ -3,7 +3,10 @@ from __future__ import unicode_literals
 from radlibs import Client
 from tests import TestCase
 from nose.tools import eq_
-from radlibs.table.association import Association, UserAssociation
+from radlibs.table.association import (
+    Association,
+    UserAssociation,
+    AssociationInvite)
 from radlibs.table.user import User
 
 
@@ -32,3 +35,14 @@ class TestAssociation(TestCase):
         associations = Association.find_all_for_user(user)
 
         eq_(associations, [prancing_ponies, watercooler])
+
+
+class TestAssociationInvite(TestCase):
+    def test_generate(self):
+        session = Client().session()
+        association = Association(name='crazy train')
+        session.add(association)
+        session.flush()
+
+        invite = AssociationInvite.generate(association.association_id,
+                                            'nothingtolose@rhythmandblu.es')

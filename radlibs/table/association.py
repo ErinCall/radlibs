@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
+from uuid import uuid4 as uuid
 from radlibs import Client
 from radlibs.table.user import User
 
@@ -27,3 +28,19 @@ class UserAssociation(Base):
                             ForeignKey(Association.association_id),
                             primary_key=True)
     user_id = Column(Integer, ForeignKey(User.user_id), primary_key=True)
+
+
+class AssociationInvite(Base):
+    __tablename__ = 'association_invite'
+    association_id = Column(Integer,
+                            ForeignKey(Association.association_id),
+                            primary_key=True)
+    email = Column(String, primary_key=True)
+    token = Column(String, nullable=False)
+
+    @classmethod
+    def generate(cls, association_id, email):
+        token = uuid()
+        self = cls(association_id=association_id, email=email, token=token.hex)
+        Client().session().add(self)
+        return self
