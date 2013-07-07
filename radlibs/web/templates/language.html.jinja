@@ -4,14 +4,14 @@
     <div class="row-fluid marketing">
         <div class="span12">
             <h4>The Language</h4>
-            <p>If you're familiar with the idea of Madlibs, you're already familiar with the basics of Radlibs. A Radlib includes any amount of text and any number of references to <em>Libraries</em>. A Library contains one or more Radlibs. When a Radlib is <em>expanded</em>, a random sub-Radlib is chosen from each referenced Library.</p>
-            <p>Thus, if you have a Library called "Verb", containing a few verbs:</p>
+            <p>If you're familiar with the idea of Madlibs, you're already familiar with the basics of Radlibs. A Radlib includes any amount of text and any number of references to <em>Libs</em>. A Lib contains one or more Radlibs. When a Radlib is <em>expanded</em>, a random sub-Radlib is chosen from each referenced Lib.</p>
+            <p>Thus, if you have a Lib called "Verb", containing a few verbs:</p>
             <pre class="listing">
 sing
 run
 fart
 wash</pre>
-            <p>and a Library called "Adverb", containing a few of those:</p>
+            <p>and a Lib called "Adverb", containing a few of those:</p>
             <pre class="listing">
 wetly
 exuberantly
@@ -26,13 +26,13 @@ slowly</pre>
     <div class="row-fluid marketing">
         <div class="span12">
             <h4>Recursion</h4>
-            <p>Libraries' contents are themselves Radlibs. Thus, they can reference other libraries! This is where things really start to get rad. Suppose you have a Library called "Loot":</p>
+            <p>Libs' contents are themselves Radlibs. Thus, they can reference other Libs! This is where things really start to get rad. Suppose you have a Lib called "Loot":</p>
             <pre class="listing">
 +5 Sword
 Gold piece
 Heavy Truncheon
 bolt</pre>
-            <p>Then you could define a library called "Treasure":</p>
+            <p>Then you could define a Lib called "Treasure":</p>
             <pre class="listing">
 you find 1 &lt;Loot&gt;.
 you find 5 &lt;Loot&gt;s.
@@ -48,7 +48,7 @@ Upon opening the chest, you find 5 bolts.</pre>
     <div class="row-fluid marketing">
         <div class="span12">
             <h4>Syntax</h4>
-            <p>There isn't a lot of syntax to learn in order to use Radsnap. Libraries are referenced by putting their name in &lt;angle brackets&gt;. Library names must be a single capital letter, followed by only lowercase letters and underscores.</p>
+            <p>There isn't a lot of syntax to learn in order to use Radsnap. Libs are referenced by putting their name in &lt;angle brackets&gt;. Lib names must be a single capital letter, followed by only lowercase letters and underscores.</p>
             <p>You can put literal angle brackets in your Radsnaps, by escaping them with a backslash: \&lt; \&gt;</p>
         </div>
     </div>
