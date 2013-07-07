@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from nose.tools import eq_, raises
 from mock import patch
 from radlibs import Client
-from radlibs.lib import load_lib
+import radlibs.lib
 from radlibs.table.user import User
 from radlibs.table.association import Association
 from radlibs.table.radlib import Rad, Lib
@@ -39,7 +39,7 @@ class TestLoadLib(TestCase):
         session.flush()
 
         g.association_id = association.association_id
-        lib = load_lib('Food')
+        lib = radlibs.lib.load_lib('Food')
 
         eq_(lib, ['chili con carne', 'bread'])
 
@@ -70,9 +70,12 @@ class TestLoadLib(TestCase):
         session.flush()
 
         g.association_id = watercooler.association_id
-        lib = load_lib('Food')
+        lib = radlibs.lib.load_lib('Food')
 
         eq_(lib, ['bubble tea'])
+
+        eq_(radlibs.lib.LIBS,
+            {'{0}:{1}'.format(watercooler.association_id, 'Food'): ['bubble tea']})
 
     @raises(KeyError)
     @patch('radlibs.lib.g')
@@ -83,4 +86,4 @@ class TestLoadLib(TestCase):
         session.flush()
         g.association_id = association.association_id
 
-        load_lib('Loot')
+        radlibs.lib.load_lib('Loot')

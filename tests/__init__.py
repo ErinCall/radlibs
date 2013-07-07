@@ -24,6 +24,7 @@ class TestCase(unittest.TestCase):
 
     def tearDown(self):
         radlibs.Client().session().rollback()
+        radlibs.lib.LIBS = {}
 
 
 db_info = {}
