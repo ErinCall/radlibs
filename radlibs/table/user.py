@@ -16,14 +16,14 @@ class User(Base):
 
 
 class EmailVerificationToken(Base):
-	__tablename__ = 'email_verification_token'
-	user_id = Column(Integer, ForeignKey(User.user_id))
-	token = Column(String, primary_key=True)
+    __tablename__ = 'email_verification_token'
+    user_id = Column(Integer, ForeignKey(User.user_id))
+    token = Column(String, primary_key=True)
 
-	@classmethod
-	def generate(cls, user):
-		session = Client().session()
-		token = uuid()
-		verification_token = cls(token=token.hex, user_id=user.user_id)
-		session.add(verification_token)
-		return verification_token
+    @classmethod
+    def generate(cls, user):
+        session = Client().session()
+        token = uuid()
+        verification_token = cls(token=token.hex, user_id=user.user_id)
+        session.add(verification_token)
+        return verification_token
