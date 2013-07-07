@@ -13,6 +13,7 @@ class User(Base):
     email = Column(String)
     identifier = Column(String)
     email_verified_at = Column(DateTime)
+    api_key = Column(String)
 
 
 class EmailVerificationToken(Base):

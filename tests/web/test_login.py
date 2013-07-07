@@ -1,6 +1,8 @@
 from __future__ import unicode_literals
 
+import sha
 import json
+import datetime
 from mock import patch, Mock
 from nose.tools import eq_
 from radlibs.table.user import User, EmailVerificationToken
@@ -143,3 +145,81 @@ class TestLogin(TestCase):
         eq_(response.status_code, 200, response.data)
         assert 'Maybe you meant to log in with Twitter?' in response.data,\
                response.data
+
+    def test_authenticate_with_hmac_signature(self):
+        session = Client().session()
+        user = User(api_key='hurfdurf')
+        session.add(user)
+        session.flush()
+        time = datetime.datetime.utcnow().strftime('%Y%m%d %H:%M:%S')
+        endpoint = '/test_authorization'
+        plaintext = "{0}\nother_param: frabjous\n{1}\n{2}".format(
+            time, endpoint, 'hurfdurf')
+        signature = sha.sha(plaintext).hexdigest()
+        response = self.app.post(
+            endpoint, data={'user_id': user.user_id,
+                            'signature': signature,
+                            'time': time,
+                            'other_param': 'frabjous'})
+        eq_(response.status_code, 200, response.data)
+        body = json.loads(response.data)
+        eq_(body, {'status': 'ok'})
+
+    def test_authenticate_with_hmac_signature__no_such_user_id(self):
+        response = self.app.post(
+            '/test_authorization', data={'user_id': 8,
+                                         'signature': 'woop woop',
+                                         'time': '20130706 08:29:00',
+                                         'other_param': 'frabjous'})
+        eq_(response.status_code, 200, response.data)
+        body = json.loads(response.data)
+        eq_(body, {'status': 'error', 'error': 'not logged in'})
+
+    def test_hmac_auth__user_has_no_api_key(self):
+        session = Client().session()
+        user = User()
+        session.add(user)
+        session.flush()
+        time = datetime.datetime.utcnow().strftime('%Y%m%d %H:%M:%S')
+        signature = "mloop droop"
+        response = self.app.post(
+            '/test_authorization', data={'user_id': user.user_id,
+                                         'signature': signature,
+                                         'time': time,
+                                         'other_param': 'frabjous'})
+        eq_(response.status_code, 200, response.data)
+        body = json.loads(response.data)
+        eq_(body, {'status': 'error', 'error': 'not logged in'})
+
+    def test_hmac_auth__time_must_be_within_five_minutes_of_server(self):
+        session = Client().session()
+        user = User(api_key='hurfdurf')
+        session.add(user)
+        session.flush()
+        time = '20010101 01:01:01'
+        endpoint = '/test_authorization'
+        plaintext = "{0}\nother_param: frabjous\n{1}\n{2}".format(
+            time, endpoint, 'hurfdurf')
+        signature = sha.sha(plaintext).hexdigest()
+        response = self.app.post(
+            endpoint, data={'user_id': user.user_id,
+                            'signature': signature,
+                            'time': time,
+                            'other_param': 'frabjous'})
+        eq_(response.status_code, 200, response.data)
+        body = json.loads(response.data)
+        eq_(body, {'status': 'error', 'error': 'not logged in'})
+
+    def test_hmac_auth__invalid_datetime_format(self):
+        session = Client().session()
+        user = User(api_key='hurfdurf')
+        session.add(user)
+        session.flush()
+        response = self.app.post(
+            '/test_authorization', data={'user_id': user.user_id,
+                                         'signature': 'johnhancock',
+                                         'time': 'beer:30',
+                                         'other_param': 'frabjous'})
+        eq_(response.status_code, 200, response.data)
+        body = json.loads(response.data)
+        eq_(body, {'status': 'error', 'error': 'not logged in'})

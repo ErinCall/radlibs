@@ -4,13 +4,14 @@ import os
 import json
 import urlparse
 import requests
-from flask import request,\
-    redirect,\
-    make_response,\
-    session,\
-    url_for,\
-    render_template,\
-    abort
+from flask import (request,
+                   redirect,
+                   make_response,
+                   session,
+                   url_for,
+                   render_template,
+                   abort,
+                   g)
 from sqlalchemy.orm.exc import NoResultFound
 
 from radlibs import Client
@@ -18,6 +19,7 @@ from radlibs.web import app
 from radlibs.mail import send_verification_mail
 from radlibs.table.user import User, EmailVerificationToken
 from radlibs.date_utils import utcnow
+from radlibs.web.json_endpoint import json_endpoint, error_response
 
 
 @app.route('/token_url', methods=['POST'])
@@ -118,6 +120,15 @@ def logout():
     if 'user' in session:
         del(session['user'])
     return redirect(url_for('index'))
+
+
+@app.route('/test_authorization', methods=['POST'])
+@json_endpoint
+def test_authorization():
+    if g.user:
+        return {'status': 'ok'}
+    else:
+        return error_response('not logged in')
 
 
 def provider_for_identifier(identifier):

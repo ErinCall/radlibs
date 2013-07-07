@@ -1,9 +1,12 @@
 from __future__ import unicode_literals
 
+import sha
 import os
 import logging
+import datetime
 from logging.handlers import SMTPHandler
-from flask import Flask, render_template, g, session
+from flask import Flask, render_template, g, session, request
+from sqlalchemy.orm.exc import NoResultFound
 from radlibs import Client
 from radlibs.table.user import User
 
@@ -44,7 +47,35 @@ def before_request():
             filter(User.email == session['user']['email']).\
             one()
         g.user = user
-
+    elif all(map(lambda x: x in request.form,
+                 ['signature', 'user_id', 'time'])):
+        params = dict(request.form)
+        signature = params.pop('signature')[0]
+        user_id = params.pop('user_id')[0]
+        time = params.pop('time')[0]
+        try:
+            client_time = datetime.datetime.strptime(time, '%Y%m%d %H:%M:%S')
+        except ValueError:
+            return
+        current_time = datetime.datetime.utcnow()
+        if abs(client_time - current_time) > datetime.timedelta(0, 5*60, 0):
+            return
+        try:
+            user = Client().session().query(User).\
+                filter(User.user_id == user_id).\
+                one()
+        except NoResultFound:
+            return
+        if not user.api_key:
+            return
+        plaintext = time + "\n"
+        for (key, value) in params.iteritems():
+            plaintext = plaintext + "{0}: {1}\n".format(key, value[0])
+        plaintext = plaintext + request.path + "\n"
+        plaintext = plaintext + user.api_key
+        calculated_signature = sha.sha(plaintext).hexdigest()
+        if calculated_signature == signature:
+            g.user = user
 
 @app.after_request
 def after_request(response):
