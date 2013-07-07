@@ -11,38 +11,26 @@ from radlibs.web.json_endpoint import json_endpoint, error_response
 from radlibs.web.breadcrumbs import breadcrumbs
 
 
-@app.route('/lib/new/<int:association_id>')
-def new_lib(association_id):
-    if not g.user:
-        abort(401)
-    association = find_association(association_id)
-    return render_template('new_thing.html.jinja',
-                           thing_name='Lib',
-                           hidden_values={'association_id': association_id},
-                           breadcrumbs=breadcrumbs(association, 'New Lib'))
-
-
-@app.route('/lib/new/<int:association_id>', methods=['POST'])
+@app.route('/association/<int:association_id>/lib/new', methods=['POST'])
+@json_endpoint
 def create_lib(association_id):
     if not g.user:
-        abort(401)
+        return error_response('login required')
     name = request.form['name']
     try:
         parse('<{0}>'.format(name))
     except ParseError:
-        return render_template(
-            'new_thing.html.jinja', thing_name='Lib',
-            hidden_values={'association_id': association_id},
-            error="'{0}' is not a valid lib name. Lib names must be a single "
-            "letter followed by only letters and underscores.".format(name),
-        )
+        return error_response("'{0}' is not a valid lib name".format(name))
     session = Client().session()
-    find_association(association_id)
+    try:
+        find_association(association_id)
+    except NoResultFound:
+        return error_response('no such association')
     lib = Lib(association_id=association_id,
               name=name)
     session.add(lib)
     session.flush()
-    return redirect(url_for('view_lib', lib_id=lib.lib_id))
+    return {'status': 'ok', 'lib_id': lib.lib_id}
 
 
 @app.route('/lib/<int:lib_id>')
@@ -94,13 +82,9 @@ def find_lib(lib_id):
 
 def find_association(association_id):
     session = Client().session()
-    try:
-        association = session.query(Association).\
-            join(UserAssociation,
-                 UserAssociation.association_id == Association.association_id).\
-            filter(Association.association_id == association_id).\
-            filter(UserAssociation.user_id == g.user.user_id).\
-            one()
-    except NoResultFound:
-        abort(404)
-    return association
+    return session.query(Association).\
+        join(UserAssociation,
+             UserAssociation.association_id == Association.association_id).\
+        filter(Association.association_id == association_id).\
+        filter(UserAssociation.user_id == g.user.user_id).\
+        one()

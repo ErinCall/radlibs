@@ -106,6 +106,30 @@ post_params['signature'] = signature</pre>
                <dd>Your HMAC signature was not correct. Note that for security purposes, no further information is supplied.</dd>
             </dl>
         </p>
+
+        <h4 id="new_lib">new_lib: <code>/association/&lt;association_id&gt;/lib/new</code></h4>
+        <p>Params:
+            <dl>
+                <dt><code>name</code></dt>
+                <dd>The name of the Lib to be created</dd>
+            </dl>
+        </p>
+        <p>Response:
+            <pre>{
+    "status": "ok",
+    "lib_id": 42
+}</pre>
+        </p>
+        <p>Errors:
+            <dl>
+                <dt><code>login required</code></dt>
+                <dd>You called this endpoint without an authorization signature.</dd>
+                <dt><code>no such association</code></dt>
+                <dd>The association_id you passed in the uri does not map to an Association that you have permission to use.</dd>
+                <dt><code>'&lt;lib name&gt;' is not a valid lib name</code></dt>
+                <dd>The lib name you submitted is not valid. Lib names must be a single capital letter followed by only lowercase letters and underscores.</dd>
+            </dl>
+        </p>
     </div>
 </div>
 

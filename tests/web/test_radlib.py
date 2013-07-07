@@ -11,73 +11,51 @@ from radlibs import Client
 
 class TestRadLib(TestCase):
     @logged_in
-    def test_view_new_lib_page(self, user):
-        association_id = self.create_association(user)
-        response = self.app.get('/lib/new/{0}'.format(association_id))
-        eq_(response.status_code, 200)
-        assert 'Create New Lib' in response.data,\
-            "didn't see create-new-lib message"
-
-        assert '<input type="hidden" name="association_id" value="{0}">'.\
-            format(association_id) in response.data, \
-            "Didn't see hidden association_id"
-
-    def test_view_new_lib_requires_login(self):
-        response = self.app.get('/lib/new/8')
-        eq_(response.status_code, 401)
-
-    @logged_in
-    def test_view_new_lib_requires_correct_login(self, user):
-        other_user = User()
-        association_id = self.create_association(other_user)
-        response = self.app.get('/lib/new/{0}'.format(association_id))
-        eq_(response.status_code, 404)
-
-    @logged_in
     def test_create_new_lib(self, user):
         session = Client().session()
         association_id = self.create_association(user)
 
         response = self.app.post(
-            '/lib/new/{0}'.format(association_id),
+            '/association/{0}/lib/new'.format(association_id),
             data={"name": "Rant"})
         lib = session.query(Lib).one()
         eq_(lib.name, 'Rant')
 
-        eq_(response.status_code, 302)
-        eq_(response.headers['Location'],
-            'http://localhost/lib/{0}'.format(lib.lib_id))
+        eq_(response.status_code, 200, response.data)
+        body = json.loads(response.data)
+        eq_(body, {
+            'status': 'ok',
+            'lib_id': lib.lib_id,
+            })
 
     @logged_in
     def test_create_new_lib__association_id_is_required(self, user):
-        response = self.app.post('/lib/new/8', data={"name": "Buffoonery"})
-        eq_(response.status_code, 404)
+        response = self.app.post(
+            '/association/8/lib/new', data={"name": "Buffoonery"})
+        eq_(response.status_code, 200, response.data)
+        body = json.loads(response.data)
+        eq_(body, {'status': 'error', 'error': 'no such association'})
 
     def test_create_new_lib__login_is_required(self):
-        response = self.app.post('/lib/new/8', data={"name": "Maleficence"})
-        eq_(response.status_code, 401)
-
-    @logged_in
-    def test_create_new_lib__user_must_be_in_association(self, user):
-        session = Client().session()
-        other_user = User()
-        session.add(user)
-        session.flush()
-        association_id = self.create_association(other_user)
-
-        response = self.app.post('/lib/new/{0}'.format(association_id),
-                                 data={'name': 'Sneakiness'})
-        eq_(response.status_code, 404)
+        response = self.app.post(
+            '/association/8/lib/new', data={"name": "Maleficence"})
+        eq_(response.status_code, 200, response.data)
+        body = json.loads(response.data)
+        eq_(body, {'status': 'error', 'error': 'login required'})
 
     @logged_in
     def test_libcase_is_necessary(self, user):
         association_id = self.create_association(user)
 
-        response = self.app.post('/lib/new/{0}'.format(association_id),
-                                 data={'name': 'not a valid name'})
+        response = self.app.post(
+            '/association/{0}/lib/new'.format(association_id),
+            data={'name': 'not a valid name'})
         eq_(response.status_code, 200, response.data)
-        assert "&#39;not a valid name&#39; is not a valid lib name." \
-            in response.data, "Didn't see error message"
+        body = json.loads(response.data)
+        eq_(body, {
+            'status': 'error',
+            'error': "'not a valid name' is not a valid lib name",
+            })
         assert "Lib names must be a single letter followed by only " \
             "letters and underscores" in response.data, \
             "Didn't see explanation"

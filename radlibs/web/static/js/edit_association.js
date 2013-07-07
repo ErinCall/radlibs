@@ -6,7 +6,68 @@
 		radlibs = window.radlibs;
 
 	new_lib = function() {
-		document.location = $( 'body' ).data( 'new_lib_url' );
+		var $new_lib_button,
+			$contents_div,
+			$lib_div,
+			$input,
+			$form,
+			submit_lib,
+			$submit_link,
+			$submit_button;
+
+		$new_lib_button = $( '#new-lib-button' );
+		$contents_div = $( '<div>' );
+		$contents_div.addClass( 'span4' );
+		$lib_div = $( '<div>' );
+		$lib_div.addClass( 'lib-display' );
+		$input = $( '<input>' );
+		$input.css('width', '80%');
+		$form = $( '<form>' );
+		$submit_link = $( '<a>' );
+		$submit_link.attr( 'href', '#' );
+		$submit_button = $( '<img>' );
+		$submit_button.attr( 'src', '/static/img/accept-icon.png' );
+		$submit_button.css( 'margin-left', '10px');
+		$submit_button.attr( 'alt', 'send' );
+
+		submit_lib = function( event ) {
+			event.preventDefault();
+			var lib_name,
+				new_lib_url;
+
+			lib_name = $input.val().trim();
+			new_lib_url = $( 'body' ).data( 'new_lib_url' );
+
+			$.ajax( new_lib_url, {
+				type: 'POST',
+				data: { name: lib_name },
+				success: function(data, status, jqXHR) {
+					var lib_id,
+						body = JSON.parse( data );
+					if ( body[ 'status' ] == 'ok' ) {
+						lib_id = body[ 'lib_id' ];
+						document.location = '/lib/' + lib_id;
+					} else {
+						radlibs.display_error( body[ 'error' ]);
+					}
+				},
+				error: function(jqXHR, status, errorThrown) {
+					alert( errorThrown );
+				}
+			});
+		};
+
+		$form.submit( submit_lib );
+		$submit_link.click( submit_lib );
+		$submit_link.append( $submit_button );
+		$form.append( $input );
+		$form.append( $submit_link );
+		$contents_div.append( $form );
+		$contents_div.append( $lib_div );
+		$new_lib_button.detach();
+		radlibs.row_with_vacancy( 'lib-row' ).append( $contents_div );
+		radlibs.row_with_vacancy( 'lib-row' ).append( $new_lib_button );
+		$input.focus();
 	};
 
 	test_radlib = function( event ) {
