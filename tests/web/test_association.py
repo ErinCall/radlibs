@@ -22,6 +22,10 @@ class TestAssociation(TestCase):
         response = self.app.get('/associations')
         eq_(response.status_code, 302, response.data)
 
+    def test_association_list_requires_login(self):
+        response = self.app.get('/associations')
+        eq_(response.status_code, 401, response.data)
+
     @logged_in
     def test_association_list_lists_associations(self, user):
         session = Client().session()

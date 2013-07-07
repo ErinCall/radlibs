@@ -21,6 +21,8 @@ from radlibs.date_utils import utcnow
 
 @app.route('/associations')
 def list_associations():
+    if not g.user:
+        abort(401)
     associations = Association.find_all_for_user(g.user)
     if associations:
         return render_template('list_associations.html.jinja',
