@@ -4,7 +4,7 @@
     <div class="row-fluid marketing">
         <div class="span12">
             <h4>The Language</h4>
-            <p>If you're familiar with the idea of Madlibs, you're already familiar with the basics of Radlibs. A Radlib includes any amount of text and any number of references to <em>Libs</em>. A Lib contains one or more Radlibs. When a Radlib is <em>expanded</em>, a random sub-Radlib is chosen from each referenced Lib.</p>
+            <p>If you're familiar with the idea of Madlibs<sup>&reg;</sup>, you're already familiar with the basics of Radlibs. A Radlib includes any amount of text and any number of references to <em>Libs</em>. A Lib contains one or more phrases or phrase templates, referred to as <em>Rads</em>. When a Radlib is <em>expanded</em>, a random Rad is chosen from each referenced Lib.</p>
             <p>Thus, if you have a Lib called "Verb", containing a few verbs:</p>
             <pre class="listing">
 sing
@@ -48,8 +48,10 @@ Upon opening the chest, you find 5 bolts.</pre>
     <div class="row-fluid marketing">
         <div class="span12">
             <h4>Syntax</h4>
-            <p>There isn't a lot of syntax to learn in order to use Radsnap. Libs are referenced by putting their name in &lt;angle brackets&gt;. Lib names must be a single capital letter, followed by only lowercase letters and underscores.</p>
-            <p>You can put literal angle brackets in your Radsnaps, by escaping them with a backslash: \&lt; \&gt;</p>
+            <p>There isn't a lot of syntax to learn in order to use Radlibs. Libs are referenced by putting their name in &lt;angle brackets&gt;. Lib names must be a single capital letter, followed by only lowercase letters and underscores.</p>
+            <p>If you expect a Lib's expansion to generate a verb or verb phrase, and you want it to come out in the past tense, you can indicate this by putting a <code>d</code> after the lib: <code>&lt;Verb&gt;d</code>.</p>
+            <p>If your Rad is a verb phrase, you can indicate which of the words in it is the verb by putting a caret (<code>^</code>) after it: <code>quickly run^ to the store</code>. The caret is not necessary if the verb is the last word in your Rad.</p>
+            <p>You can put literal angle brackets, carets, etc. in your Radsnaps, by escaping them with a backslash: <code>\&lt; \&gt; \^</code>.</p>
         </div>
     </div>
     <div class="row-fluid marketing">

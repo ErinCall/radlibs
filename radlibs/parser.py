@@ -6,16 +6,21 @@ from parsimonious.grammar import Grammar
 from parsimonious.nodes import NodeVisitor
 
 from radlibs.lib import load_lib
+from radlibs.english.irregular_past_verbs import irregular_past_verbs
 
 recursion = {'depth': 0}
 
 grammar = Grammar("""
-    contents     = rad*
-    rad          = letter+ / lib
-    lib          = "<" lib_name ">"
-    lib_name     = ~"[A-Z]" ~"[a-z_]*"
-    letter       = anglebracket / ~"[^<>]"
-    anglebracket = "\\<" / "\\>"
+    contents = rad*
+    rad       = (word indicator?) / (lib indicator?) / whitespace
+    lib       = "<" lib_name ">" inflector?
+    lib_name  = ~"[A-Z]" ~"[a-z_]*"
+    word      = literal / letter+
+    whitespace = ~"[\s]"
+    indicator = "^"
+    inflector = "d"
+    letter    = ~"[^^<>\s\\\\\\]"
+    literal   = "\\<" / "\\>" / "\\d" / "\\^"
 """)
 
 
@@ -24,6 +29,8 @@ class ParseError(StandardError):
 
 
 class Node(object):
+    indicated = False
+
     def append(self, child):
         raise NotImplementedError('append')
 
@@ -36,6 +43,12 @@ class Node(object):
     def __repr__(self):
         return "{0}: '{1}'".format(type(self), unicode(self))
 
+    def indicate(self):
+        self.indicated = True
+
+    def past_tense(self):
+        raise NotImplementedError('past_tense')
+
 
 class Rad(Node):
     children = None
@@ -44,15 +57,15 @@ class Rad(Node):
         self.children = []
 
     def append(self, child):
-        if self.children and \
-                type(child) == Text and \
-                type(self.children[-1]) == Text:
-            self.children[-1].append(child)
-        else:
-            self.children.append(child)
+        self.children.append(child)
 
     def __str__(self):
         return ''.join([unicode(child) for child in self.children])
+
+    def indicated_or_last(self):
+        for i, child in enumerate(self.children):
+            if child.indicated or (i + 1 == len(self.children)):
+                return child
 
 
 class Text(Node):
@@ -67,14 +80,30 @@ class Text(Node):
     def __str__(self):
         return ''.join(self.characters)
 
+    def __hash__(self):
+        return unicode(self).__hash__()
+
+    def override(self, new_text):
+        self.characters = [new_text]
+
+    def past_tense(self):
+        if self in irregular_past_verbs:
+            self.override(irregular_past_verbs[self])
+        else:
+            self.append('d')
+
+
+PAST_TENSE = 'past'
+PRESENT_TENSE = 'present'
+
 
 class Lib(Node):
     lib = None
     lib_name = None
+    tense = PRESENT_TENSE
 
     def __init__(self, lib_name):
         self.lib_name = lib_name
-        # self.lib = load_lib(lib_name)
 
     def __str__(self):
         if recursion['depth'] > 20:
@@ -82,12 +111,22 @@ class Lib(Node):
         lib = load_lib(self.lib_name)
         try:
             recursion['depth'] += 1
-            return unicode(parse(choice(lib)))
+            sub_rad = parse(choice(lib))
+            if self.tense == PAST_TENSE:
+                word = sub_rad.indicated_or_last()
+                word.past_tense()
+            return unicode(sub_rad)
         except ParseError as e:
             error = "{0} (found inside {1})".format(e.message, self.lib_name)
             raise ParseError(error)
         finally:
             recursion['depth'] -= 1
+
+    def past_tense(self):
+        self.tense = PAST_TENSE
+
+    def __repr__(self):
+        return '<{0}>'.format(self.lib_name)
 
 
 class RadParser(NodeVisitor):
@@ -99,15 +138,25 @@ class RadParser(NodeVisitor):
     def generic_visit(self, node, visited_children):
         pass
 
-    def visit_letter(self, node, visited_children):
-        character_node = node.children[0]
-        if character_node.expr_name == 'anglebracket':
-            self.rad.append(Text(character_node.text.replace('\\', '')))
-        else:
-            self.rad.append(Text(character_node.text))
+    def visit_word(self, node, visited_children):
+        if node.children[0].expr_name != 'literal':
+            self.rad.append(Text(node.text))
+
+    def visit_literal(self, node, visited_children):
+        literal = node.text.replace('\\', '')
+        self.rad.append(Text(literal))
+
+    def visit_whitespace(self, node, visited_children):
+        self.rad.append(Text(node.text))
 
     def visit_lib_name(self, node, visited_children):
         self.rad.append(Lib(node.text))
+
+    def visit_inflector(self, node, visited_children):
+        self.rad.children[-1].past_tense()
+
+    def visit_indicator(self, node, visited_children):
+        self.rad.children[-1].indicate()
 
 
 def parse(plaintext):

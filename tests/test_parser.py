@@ -47,7 +47,15 @@ class TestParser(TestCase):
 
         rad = parse(plaintext)
         eq_(rad, 'the cat ate my blessed longsword')
-        eq_(rad.children, ['the ', 'cat', ' ate my ', 'blessed longsword'])
+        eq_(rad.children, ['the',
+                           ' ',
+                           'cat',
+                           ' ',
+                           'ate',
+                           ' ',
+                           'my',
+                           ' ',
+                           'blessed longsword'])
 
     def test_literal_angle_brackets(self):
         plaintext = "look over there --\>"
@@ -87,3 +95,40 @@ class TestParser(TestCase):
             "Unexpected token '>' at line 1 character 10 of 'HAY GUISE>' "
             "(found inside Broken) (found inside Inner) (found inside Middle) "
             "(found inside Outermost)")
+
+    def test_a_literal_d_not_after_a_lib(self):
+        plaintext = 'betted'
+        eq_(parse(plaintext), plaintext)
+
+    def test_past_tense__simple_case(self):
+        libs = {
+            'Verb': ['pounce'],
+        }
+        with patch('radlibs.parser.load_lib', lambda lib: libs[lib]):
+            radlib = unicode(parse('I <Verb>d quickly'))
+
+        eq_(radlib, "I pounced quickly")
+
+    def test_past_tense__irregular_verb(self):
+        libs = {'Verb': ['run']}
+        with patch('radlibs.parser.load_lib', lambda lib: libs[lib]):
+            radlib = unicode(parse('I <Verb>d quickly'))
+
+        eq_(radlib, "I ran quickly")
+
+    def test_past_tense__verb_phrase(self):
+        libs = {'Verb': ['run^ quickly']}
+        with patch('radlibs.parser.load_lib', lambda lib: libs[lib]):
+            radlib = unicode(parse('I <Verb>d'))
+        eq_(radlib, "I ran quickly")
+
+    def test_past_tense__in_a_nested_lib(self):
+        libs = {
+            'Verb': ['run'],
+            'Action': ['I <Verb>^ quickly'],
+        }
+
+        with patch('radlibs.parser.load_lib', lambda lib: libs[lib]):
+            radlib = unicode(parse('sometimes <Action>d'))
+
+        eq_(radlib, 'sometimes I ran quickly')

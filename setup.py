@@ -13,6 +13,7 @@ setup(name="radlibs",
           'radlibs.web',
           'radlibs.web.controllers',
           'radlibs.table',
+          'radlibs.english',
       ],
       scripts=[],
       install_requires=[
