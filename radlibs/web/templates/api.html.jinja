@@ -1,0 +1,112 @@
+{% extends 'layout.html.jinja' %}
+{% set active_page = 'language' %}
+{% block content %}
+<div class="row-fluid marketing">
+    <div class="span12">
+        <h2>The Radlibs API</h2>
+        <p>Radlibs provides a full-featured API for viewing, managing, and evaluating your Radlibs.</p>
+
+        <h3>Interacting With The API</h3>
+        <p>The Radlibs API is <em>not</em> "RESTful." While REST is a fine architecture, we found that it did not meet the needs of the Radlibs API. Don't worry: once you've read this document you'll understand the conventions used in the Radlibs API well enough to quickly and confidently implement your client.</p>
+        <p>All requests are made by HTTP POST. This includes requests intended to fetch data from the server, add data to the server, or update data already on the server.</p>
+        <p>Responses are always HTTP 200, with a JSON body indicating success or failure. This JSON object will always have a <code>status</code> key, with a value of either <code>ok</code> or <code>error</code>. A success response may also have other keys, depending on the endpoint. An error response will always have an <code>error</code> key describing the problem.</p>
+        <pre>{
+    "status": "ok"
+}</pre><pre>{
+    "status": "error",
+    "error": "no such association"
+}</pre>
+        <p>The only exceptions to the "always HTTP 200" rule are if there is a server error, or if the endpoint you've requested simply doesn't exist.</p>
+        <p>The documentation for the individual endpoints, below, discuss their possible success and error responses.</p>
+    </div>
+</div>
+<div class="row-fluid marketing">
+    <div class="span12">
+        <h3>Authentication</h3>
+        <p>In addition to the per-endpoint params listed below, all endpoints require three authentication params: <code>time</code>, <code>user_id</code>, and <code>signature</code>.</p>
+
+        <h4>Calculating an authentication signature</h4>
+        <p>The Radlibs API uses <a href="http://en.wikipedia.org/wiki/Hmac">HMAC SHA1</a> to ensure that only the members of your Association are able to access your Libs. Using a shared secret key, Radlibs and your API client each calculate a signature from the params you send to Radlibs. The signature is the SHA1 of the current time, the endpoint you're requesting, the params you're posting, and your secret key. Here is a Python implementation of the algorithm for calculating a signature:</p>
+<pre>import datetime
+import sha
+time = datetime.datetime.utcnow().strftime('%Y%m%dT%H:%M:%S')
+plaintext = time + "\n"
+for key in sorted(post_params.keys()):
+    plaintext += "{0}: {1}\n".format(key, post_params[key])
+plaintext += '/test_authorization\n'
+plaintext += API_KEY
+signature = sha.sha(plaintext).hexdigest()
+post_params['time'] = time
+post_params['user_id'] = USER_ID
+post_params['signature'] = signature</pre>
+    </div>
+    <p>There are a few things you should notice about this code, to ensure your own implementation is correct:<ul>
+        <li>The time is formatted according to <a href="https://en.wikipedia.org/wiki/ISO_8601">ISO-8601</a>.</li>
+        <li>The time is given in UTC.</li>
+        <li>The time is not included in the params section of the plaintext; instead it is its own line.</li>
+        <li>Items in the plaintext are separated with newlines, but there is no trailing newline.</li>
+        <li>The post params and values are separated with a colon and a single space.</li>
+    </ul></p>
+    <p>Note that you can use the <a href="#test_authorization"><code>test_authorization</code></a> endpoint to test your API client's HMAC implementation.</p>
+</div>
+<div class="row-fluid marketing">
+    <div class="span12">
+        <h3>Endpoints</h3>
+        <h4 id="test_radlib">test_radlib: <code>/association/&lt;association_id&gt;/test_radlib</code></h4>
+        <p>Params:
+            <dl>
+                <dt><code>rad</code></dt>
+                <dd>A string to be parsed and expanded using the current Association's Libs.</dd>
+            </dl>
+        </p>
+        <p>Response:
+            <pre>{
+    "status": "ok",
+    "radlib": "space duck"
+}</pre>
+        </p>
+        <p>Errors:
+            <dl>
+                <dt><code>login required</code></dt>
+                <dd>You called this endpoint without an authorization signature.</dd>
+                <dt><code>no such association</code></dt>
+                <dd>The association_id you passed in the uri does not map to an Association that you have permission to use.</dd>
+                <dt><code>no such lib '&lt;lib&gt;'</code></dt>
+                <dd>The Rad (or one of its expansions) referenced a Lib that does not exist in your Association.</dd>
+            </dl>
+        </p>
+
+        <h4 id="new_rad">new_rad: <code>/lib/&lt;lib_id&gt;/rad/new</code></h4>
+        <p>Params:
+            <dl>
+                <dt><code>rad</code></dt>
+                <dd>A string to be added to the given Lib's list of Rads.</dd>
+            </dl>
+        </p>
+        <p>Response:
+            <pre>{"status": "ok"}</pre>
+        </p>
+        <p>Errors:
+            <dl>
+                <dt><code>login required</code></dt>
+                <dd>You called this endpoint without an authorization signature.</dd>
+                <dt><code>no such lib</code></dt>
+                <dd>The lib_id you passed in the uri does not map to a Lib that you have permission to use.</dd>
+            </dl>
+        </p>
+
+        <h4 id="test_authorization">test_authorization: <code>/test_authorization</code></h4>
+        <p>Params: none</p>
+        <p>Response:
+            <pre>{"status": "ok"}</pre>
+        </p>
+        <p>Errors:
+            <dl>
+               <dt><code>not logged in</code></dt>
+               <dd>Your HMAC signature was not correct. Note that for security purposes, no further information is supplied.</dd>
+            </dl>
+        </p>
+    </div>
+</div>
+
+{% endblock content %}

@@ -93,6 +93,11 @@ def live_demo():
     return render_template('live_demo.html.jinja')
 
 
+@app.route('/api/')
+def api():
+    return render_template('api.html.jinja')
+
+
 @app.route('/language/')
 def language():
     return render_template('language.html.jinja')
@@ -113,6 +118,7 @@ import radlibs.web.controllers.profile
 def build_menu():
     if g.user:
         return {'menu': [
+            ('api', 'The Api'),
             ('language', 'The Language'),
             ('list_associations', 'Associations'),
             ('profile', 'Profile'),
