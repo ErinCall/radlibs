@@ -61,6 +61,7 @@
 			$submit_link.attr( 'href', '#' );
 			$submit_button = $( '<img>' );
 			$submit_button.attr( 'src', '/static/img/accept-icon.png' );
+			$submit_button.css( 'margin-left', '10px');
 			$submit_button.attr( 'alt', 'send' );
 			$submit_link.append( $submit_button );
 
