@@ -4,6 +4,7 @@ from random import choice
 from parsimonious.exceptions import IncompleteParseError
 from parsimonious.grammar import Grammar
 from parsimonious.nodes import NodeVisitor
+from inflector import Inflector
 
 from radlibs.lib import load_lib
 from radlibs.english.irregular_past_verbs import irregular_past_verbs
@@ -18,9 +19,9 @@ grammar = Grammar("""
     word      = literal / letter+
     whitespace = ~"[\s]"
     indicator = "^"
-    inflector = "d"
+    inflector = "d" / "s"
     letter    = ~"[^^<>\s\\\\\\]"
-    literal   = "\\<" / "\\>" / "\\d" / "\\^"
+    literal   = "\\<" / "\\>" / "\\d" / "\\^" / "\\s"
 """)
 
 
@@ -48,6 +49,9 @@ class Node(object):
 
     def past_tense(self):
         raise NotImplementedError('past_tense')
+
+    def plural(self):
+        raise NotImplementedError('plural')
 
 
 class Rad(Node):
@@ -92,6 +96,9 @@ class Text(Node):
         else:
             self.append('d')
 
+    def plural(self):
+        self.override(Inflector().pluralize(unicode(self)))
+
 
 PAST_TENSE = 'past'
 PRESENT_TENSE = 'present'
@@ -101,6 +108,7 @@ class Lib(Node):
     lib = None
     lib_name = None
     tense = PRESENT_TENSE
+    is_plural = False
 
     def __init__(self, lib_name):
         self.lib_name = lib_name
@@ -115,6 +123,11 @@ class Lib(Node):
             if self.tense == PAST_TENSE:
                 word = sub_rad.indicated_or_last()
                 word.past_tense()
+
+            if self.is_plural:
+                word = sub_rad.indicated_or_last()
+                word.plural()
+
             return unicode(sub_rad)
         except ParseError as e:
             error = "{0} (found inside {1})".format(e.message, self.lib_name)
@@ -124,6 +137,9 @@ class Lib(Node):
 
     def past_tense(self):
         self.tense = PAST_TENSE
+
+    def plural(self):
+        self.is_plural = True
 
     def __repr__(self):
         return '<{0}>'.format(self.lib_name)
@@ -153,7 +169,12 @@ class RadParser(NodeVisitor):
         self.rad.append(Lib(node.text))
 
     def visit_inflector(self, node, visited_children):
-        self.rad.children[-1].past_tense()
+        if node.text == 'd':
+            self.rad.children[-1].past_tense()
+        elif node.text == 's':
+            self.rad.children[-1].plural()
+        else:
+            raise ParseError("Unknown inflector '{0}'".format(node.text))
 
     def visit_indicator(self, node, visited_children):
         self.rad.children[-1].indicate()

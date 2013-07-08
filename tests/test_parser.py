@@ -100,6 +100,14 @@ class TestParser(TestCase):
         plaintext = 'betted'
         eq_(parse(plaintext), plaintext)
 
+    def test_a_literal_d_after_a_lib(self):
+        libs = {'Verb': ['run']}
+
+        with patch('radlibs.parser.load_lib', lambda lib: libs[lib]):
+            radlib = unicode(parse('<Verb>\\d'))
+
+        eq_(radlib, "rund")
+
     def test_past_tense__simple_case(self):
         libs = {
             'Verb': ['pounce'],
@@ -132,3 +140,47 @@ class TestParser(TestCase):
             radlib = unicode(parse('sometimes <Action>d'))
 
         eq_(radlib, 'sometimes I ran quickly')
+
+    def test_a_literal_s_not_after_a_lib(self):
+        radlib = unicode(parse('parts'))
+        eq_(radlib, 'parts')
+
+    def test_a_literal_s_after_a_lib(self):
+        libs = {'Loot': ['sword^ of slaying']}
+        with patch('radlibs.parser.load_lib', lambda lib: libs[lib]):
+            radlib = unicode(parse('<Loot>\\s'))
+
+        eq_(radlib, 'sword of slayings')
+
+    def test_plural__simple_case(self):
+        libs = {'Loot': ['sword']}
+        with patch('radlibs.parser.load_lib', lambda lib: libs[lib]):
+            radlib = unicode(parse('<Loot>s'))
+
+        eq_(radlib, 'swords')
+
+    def test_plural__irregular_noun(self):
+        libs = {'Animal': ['sheep']}
+        with patch('radlibs.parser.load_lib', lambda lib: libs[lib]):
+            radlib = unicode(parse('<Animal>s'))
+
+        eq_(radlib, 'sheep')
+
+    def test_plural__verb_phrase(self):
+        libs = {'Loot': ['sword^ of slaying']}
+        with patch('radlibs.parser.load_lib', lambda lib: libs[lib]):
+            radlib = unicode(parse('<Loot>s'))
+        eq_(radlib, "swords of slaying")
+
+    def test_plural__in_a_nested_lib(self):
+        libs = {
+            'Loot': ['sword^ of slaying'],
+            'Treasure': ['You find 3 <Loot>s in the chest!'],
+        }
+
+        with patch('radlibs.parser.load_lib', lambda lib: libs[lib]):
+            radlib = unicode(parse('After defeating the monster, <Treasure>'))
+
+        eq_(radlib, 'After defeating the monster, '
+            'You find 3 swords of slaying in the chest!')
+

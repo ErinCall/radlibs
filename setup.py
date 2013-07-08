@@ -25,6 +25,7 @@ setup(name="radlibs",
           'gunicorn',
           'requests',
           'blinker',
+          'inflector',
 
           "nose",
           'mock',
