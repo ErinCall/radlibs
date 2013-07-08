@@ -73,7 +73,7 @@ def before_request():
             plaintext = plaintext + "{0}: {1}\n".format(key, params[key][0])
         plaintext = plaintext + request.path + "\n"
         plaintext = plaintext + user.api_key
-        calculated_signature = sha.sha(plaintext).hexdigest()
+        calculated_signature = sha.sha(plaintext.encode('utf-8')).hexdigest()
         if calculated_signature == signature:
             g.user = user
 
