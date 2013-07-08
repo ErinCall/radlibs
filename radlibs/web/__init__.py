@@ -76,8 +76,6 @@ def before_request():
         calculated_signature = sha.sha(plaintext).hexdigest()
         if calculated_signature == signature:
             g.user = user
-    if 'Host' in request.headers:
-        app.config['SERVER_NAME'] = request.headers['Host']
 
 @app.after_request
 def after_request(response):
