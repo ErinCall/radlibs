@@ -33,6 +33,8 @@ def list_associations():
 
 @app.route('/association/new')
 def new_association():
+    if not g.user:
+        abort(401)
     return render_template('new_thing.html.jinja',
                            thing_name="Association",
                            breadcrumbs=breadcrumbs('New'))
@@ -40,6 +42,8 @@ def new_association():
 
 @app.route('/association/new', methods=['POST'])
 def create_association():
+    if not g.user:
+        abort(401)
     name = request.form['name']
     session = Client().session()
     association = Association(name=name)
@@ -57,6 +61,8 @@ def create_association():
 
 @app.route('/association/<int:association_id>')
 def manage_association(association_id):
+    if not g.user:
+        abort(401)
     session = Client().session()
     try:
         association = session.query(Association).\
