@@ -52,6 +52,7 @@ post_params['signature'] = signature</pre>
 <div class="row-fluid marketing">
     <div class="span12">
         <h3>Endpoints</h3>
+        <p>In addition to the specific errors listed per-endpoint, any endpoint that requires params can return <code>missing param '&lt;param&gt;'</code>.</p>
         <h4 id="test_radlib">test_radlib: <code>/association/&lt;association_id&gt;/test_radlib</code></h4>
         <p>Params:
             <dl>
@@ -92,6 +93,31 @@ post_params['signature'] = signature</pre>
                 <dd>You called this endpoint without an authorization signature.</dd>
                 <dt><code>no such lib</code></dt>
                 <dd>The lib_id you passed in the uri does not map to a Lib that you have permission to use.</dd>
+            </dl>
+        </p>
+
+        <h4 id="new_rad_by_name">new_rad_by_name: <code>/lib/rad/new</code></h4>
+        <p>Params:
+            <dl>
+                <dt><code>association_id</code></dt>
+                <dd>The id of the Association where you want to add a Rad</dd>
+                <dt><code>lib</code></dt>
+                <dd>The name of an existing Lib in that Association</dd>
+                <dt><code>rad</code></dt>
+                <dd>A string to be added to the named Lib's list of Rads</dd>
+            </dl>
+        </p>
+        <p>Response:
+            <pre>{"status": "ok"}</pre>
+        </p>
+        <p>Errors:
+            <dl>
+                <dt><code>login required</code></dt>
+                <dd>You called this endpoint without an authorization signature.</dd>
+                <dt><code>no such association</code></dt>
+                <dd>The association_id you passed in the uri does not map to an Association that you have permission to use.</dd>
+                <dt><code>no such lib '&lt;lib&gt;'</code></dt>
+                <dd>The named lib doesn't exist in the Association.</dd>
             </dl>
         </p>
 

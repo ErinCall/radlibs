@@ -7,6 +7,7 @@ from radlibs.table.association import Association, UserAssociation
 from radlibs.table.user import User
 from radlibs.table.radlib import Rad, Lib
 from radlibs import Client
+from nose.plugins.skip import SkipTest
 
 
 class TestRadLib(TestCase):
@@ -184,6 +185,106 @@ class TestRadLib(TestCase):
         eq_(body, {
             'status': 'error',
             'error': 'no such lib'})
+
+    @logged_in
+    def test_add_new_rad_by_name(self, user):
+        session = Client().session()
+        association_id = self.create_association(user)
+        lib = Lib(name="Song", association_id=association_id)
+        session.add(lib)
+        session.flush()
+
+        response = self.app.post('/lib/rad/new', data={
+            'association_id': association_id,
+            'lib': 'Song',
+            'rad': 'Stairway to <Location>',
+        })
+        eq_(response.status_code, 200)
+        body = json.loads(response.data)
+        eq_(body, {'status': 'ok'})
+
+    @logged_in
+    def test_new_rad_by_name__no_such_lib(self, user):
+        association_id = self.create_association(user)
+
+        response = self.app.post('/lib/rad/new', data={
+            'association_id': association_id,
+            'lib': 'Song',
+            'rad': 'radar <Emotion>',
+        })
+        eq_(response.status_code, 200)
+        body = json.loads(response.data)
+        eq_(body, {
+            "status": 'error',
+            'error': "no such lib 'Song'"
+            })
+
+    @logged_in
+    def test_new_rad_by_name__no_such_association_id(self, user):
+        response = self.app.post('/lib/rad/new', data={
+            'association_id': 8,
+            'lib': 'Song',
+            'rad': '<Color> Friday',
+        })
+        eq_(response.status_code, 200)
+        body = json.loads(response.data)
+        eq_(body, {
+            "status": 'error',
+            'error': "no such association",
+            })
+
+    def test_new_rad_by_name__requires_login(self):
+        response = self.app.post('/lib/rad/new', data={
+            'association_id': 8,
+            'lib': 'Song',
+            'rad': '<0-99> Problems',
+        })
+        eq_(response.status_code, 200)
+        body = json.loads(response.data)
+        eq_(body, {
+            "status": 'error',
+            'error': "login required",
+            })
+
+    @logged_in
+    def test_new_rad_by_name__requires_correct_login(self, user):
+        session = Client().session()
+        other_user = User()
+        association_id = self.create_association(other_user)
+        lib = Lib(name="Song", association_id=association_id)
+        session.add(lib)
+        session.flush()
+
+        response = self.app.post('/lib/rad/new', data={
+            'association_id': association_id,
+            'lib': 'Song',
+            'rad': 'The sound of <Sound>',
+        })
+        eq_(response.status_code, 200)
+        body = json.loads(response.data)
+        eq_(body, {
+            "status": 'error',
+            'error': "no such association",
+            })
+
+    @logged_in
+    def test_new_rad_by_name__missing_params(self, user):
+        session = Client().session()
+        association_id = self.create_association(user)
+        lib = Lib(name="Song", association_id=association_id)
+        session.add(lib)
+        session.flush()
+
+        response = self.app.post('/lib/rad/new', data={
+            'lib': 'Song',
+            'rad': 'Stairway to <Location>',
+        })
+        eq_(response.status_code, 200)
+        body = json.loads(response.data)
+        eq_(body, {
+            'status': 'error',
+            'error': "missing param 'association_id'"
+            })
 
     @nottest
     def create_association(self, user):

@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from flask import render_template, g, url_for, redirect, request, abort
+from flask import render_template, g, request, abort
 from sqlalchemy.orm.exc import NoResultFound
 from radlibs import Client
 from radlibs.web import app
@@ -64,6 +64,32 @@ def new_rad(lib_id):
         return error_response('no such lib')
     rad = Rad(created_by=g.user.user_id,
               lib_id=lib_id,
+              rad=request.form['rad'])
+    session.add(rad)
+    return {'status': 'ok'}
+
+
+@app.route('/lib/rad/new', methods=['POST'])
+@json_endpoint
+def new_rad_by_name():
+    if not g.user:
+        return error_response('login required')
+    session = Client().session()
+    lib_name = request.form['lib']
+    association_id = request.form['association_id']
+    try:
+        find_association(association_id)
+    except NoResultFound:
+        return error_response('no such association')
+    try:
+        lib = session.query(Lib).\
+            filter(Lib.name == lib_name).\
+            filter(Lib.association_id == association_id).\
+            one()
+    except NoResultFound:
+        return error_response("no such lib '{0}'".format(lib_name))
+    rad = Rad(created_by=g.user.user_id,
+              lib_id=lib.lib_id,
               rad=request.form['rad'])
     session.add(rad)
     return {'status': 'ok'}
