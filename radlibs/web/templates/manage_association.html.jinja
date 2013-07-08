@@ -9,11 +9,11 @@
     <a class="btn btn-large btn-success" href="#" id="fire">Evaluate!</a>
 </div>
 {% for email in member_emails %}
-	{% if loop.index0 is divisibleby 2 %}
+	{% if loop.index0 is divisibleby 3 %}
 		<div class="row-fluid marketing member-row">
 	{% endif %}
 			<div class="span4">{{ email |e}}</div>
-	{% if (loop.index is divisibleby 2) or (loop.last) %}
+	{% if (loop.index is divisibleby 3) or (loop.last) %}
 		</div>
 	{% endif %}
 {% endfor %}
