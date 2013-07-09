@@ -11,6 +11,7 @@ LIBS = {}
 def load_lib(lib_name):
     lib_key = '{0}:{1}'.format(g.association_id, lib_name)
     if lib_key not in LIBS:
+        print "going to the database for '{0}'".format(lib_key)
         session = Client().session()
         lib = session.query(Rad.rad).\
             join(Lib, Lib.lib_id == Rad.lib_id).\
