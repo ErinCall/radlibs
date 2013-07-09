@@ -4,6 +4,7 @@ import os
 import subprocess
 import time
 from functools import wraps
+from sqlalchemy.exc import ProgrammingError
 from sqlalchemy import create_engine
 from flask import appcontext_pushed, g
 from werkzeug.contrib.cache import NullCache
@@ -51,7 +52,7 @@ def tearDownPackage():
             'pid_column': 'procpid',
             'db_name': db_info['temp_db_name'],
         })
-    except sqlalchemy.exc.ProgrammingError as e:
+    except ProgrammingError as e:
         if '"procpid" does not exist' in str(e):
             #postgres 9.2 changed pg_stat_activity.procpid to just .pid
             db_info['master_engine'].execute(terminate_query % {
@@ -62,17 +63,20 @@ def tearDownPackage():
             raise
     drop_temp_database()
 
+
 def create_temp_database():
     db_info['master_engine'] = create_engine('postgresql://localhost/postgres')
     db_info['temp_db_name'] = 'radlibs_test_%d' % int(time.time())
     conn = db_info['master_engine'].connect()
-    conn.execute('commit')#work around sqlalchemy's auto-transactions
+    conn.execute('commit')  # work around sqlalchemy's auto-transactions
     conn.execute('create database %s' % db_info['temp_db_name'])
+
 
 def drop_temp_database():
     conn = db_info['master_engine'].connect()
     conn.execute('commit')
     conn.execute('drop database %s' % db_info['temp_db_name'])
+
 
 def apply_migrations(temp_db_url):
     migrations_dir = os.path.join(
