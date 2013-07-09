@@ -230,3 +230,15 @@ class TestParser(TestCase):
             radlib = unicode(parse('a <Time_unit>'))
 
         eq_(radlib, 'an hour')
+
+    def test_modifier__bang_is_uppercase(self):
+        libs = {'Animal': ['orca']}
+        with patch('radlibs.parser.load_lib', lambda lib: libs[lib]):
+            radlib = unicode(parse('<!Animal>'))
+        eq_(radlib, 'ORCA')
+
+    def test_uppercase_in_the_midst_of_a_string(self):
+        libs = {"Headline": ["man bites dog"]}
+        with patch('radlibs.parser.load_lib', lambda lib: libs[lib]):
+            radlib = unicode(parse('the headlines read <!Headline> that day'))
+        eq_(radlib, 'the headlines read MAN BITES DOG that day')

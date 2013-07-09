@@ -49,6 +49,11 @@ Upon opening the chest, you find 5 bolts.</pre>
         <div class="span12">
             <h4>Syntax</h4>
             <p>There isn't a lot of syntax to learn in order to use Radlibs. Libs are referenced by putting their name in &lt;angle brackets&gt;. Lib names must be a single capital letter, followed by only lowercase letters and underscores.</p>
+            <p>A lib may have one or several <em>modifiers</em>. A modifier is a nonalphanumeric character appearing  between the opening angle-bracket and the first letter of the Lib name. It will apply certain modifications to the expanded text of the Lib. The modifiers recognized by Radlibs are:</p>
+            <dl>
+                <dt><code>!</code></dt>
+                <dd>change all the text in the expanded lib to uppercase.</dd>
+            </dl>
             <p>If you expect a Lib's expansion to generate a verb or verb phrase, and you want it to come out in the past tense, you can indicate this by putting a <code>d</code> after the lib: <code>&lt;Verb&gt;d</code>.</p>
             <p>If your Rad is a verb phrase, you can indicate which of the words in it is the verb by putting a caret (<code>^</code>) after it: <code>quickly run^ to the store</code>. The caret is not necessary if the verb is the last word in your Rad.</p>
             <p>In the same vein, if you expect a Lib's expansion to generate a noun or noun phrase, and you want it to be plural, put an <code>s</code> after the lib: <code>&lt;Crate&gt;s</code>. Indicate which word in a phrase is the primary noun with a <code>^</code>, just as when indicating the primary verb for tense-modification.</p>

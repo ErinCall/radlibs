@@ -16,7 +16,8 @@ recursion = {'depth': 0}
 grammar = Grammar("""
     contents = rad*
     rad       = (word indicator?) / (lib indicator?) / whitespace
-    lib       = "<" lib_name ">" inflector?
+    lib       = "<" modifier* lib_name ">" inflector?
+    modifier  = "!"
     lib_name  = ~"[A-Z]" ~"[a-z_]*"
     word      = literal / letter+
     whitespace = ~"[\s]"
@@ -58,16 +59,22 @@ class Node(object):
 
 class Rad(Node):
     children = None
+    modifier = None
 
     def __init__(self):
         self.children = []
 
     def append(self, child):
         self.children.append(child)
+        if self.modifier:
+            child.modify(self.modifier)
+            self.modifier = None
 
     def __str__(self):
         terms = []
         for child in self.children:
+            if self.modifier is not None:
+                child.modify(self.modifier)
             expanded = unicode(child)
             if type(child) == Lib:
                 try:
@@ -86,6 +93,9 @@ class Rad(Node):
         for i, child in enumerate(self.children):
             if child.indicated or (i + 1 == len(self.children)):
                 return child
+
+    def modify(self, modifier):
+        self.modifier = modifier
 
 
 class Text(Node):
@@ -124,6 +134,10 @@ class Text(Node):
     def plural(self):
         self.override(Inflector().pluralize(unicode(self)))
 
+    def modify(self, modifier):
+        if modifier == '!':
+            self.override(unicode(self).upper())
+
 
 PAST_TENSE = 'past'
 PRESENT_TENSE = 'present'
@@ -134,6 +148,7 @@ class Lib(Node):
     lib_name = None
     tense = PRESENT_TENSE
     is_plural = False
+    modifier = None
 
     def __init__(self, lib_name):
         self.lib_name = lib_name
@@ -145,6 +160,9 @@ class Lib(Node):
         try:
             recursion['depth'] += 1
             sub_rad = parse(choice(lib))
+            if self.modifier is not None:
+                sub_rad.modify(self.modifier)
+
             if self.tense == PAST_TENSE:
                 word = sub_rad.indicated_or_last()
                 word.past_tense()
@@ -169,6 +187,9 @@ class Lib(Node):
     def __repr__(self):
         return '<{0}>'.format(self.lib_name)
 
+    def modify(self, modifier):
+        self.modifier = modifier
+
 
 class RadParser(NodeVisitor):
     def __init__(self, text):
@@ -192,6 +213,9 @@ class RadParser(NodeVisitor):
 
     def visit_lib_name(self, node, visited_children):
         self.rad.append(Lib(node.text))
+
+    def visit_modifier(self, node, visited_children):
+        self.rad.modify(node.text)
 
     def visit_inflector(self, node, visited_children):
         if node.text == 'd':
