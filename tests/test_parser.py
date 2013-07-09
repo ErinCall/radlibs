@@ -117,6 +117,24 @@ class TestParser(TestCase):
 
         eq_(radlib, "I pounced quickly")
 
+    def test_past_tense__verb_ending_in_a_consonant(self):
+        libs = {
+            'Verb': ['duck']
+        }
+        with patch('radlibs.parser.load_lib', lambda lib: libs[lib]):
+            radlib = unicode(parse('<Verb>d'))
+
+        eq_(radlib, "ducked")
+
+    def test_past_tense__verb_ending_in_a_y(self):
+        libs = {
+            'Verb': ['party']
+        }
+        with patch('radlibs.parser.load_lib', lambda lib: libs[lib]):
+            radlib = unicode(parse('<Verb>d'))
+
+        eq_(radlib, "partied")
+
     def test_past_tense__irregular_verb(self):
         libs = {'Verb': ['run']}
         with patch('radlibs.parser.load_lib', lambda lib: libs[lib]):

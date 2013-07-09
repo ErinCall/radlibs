@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+import re
 from random import choice
 from parsimonious.exceptions import IncompleteParseError
 from parsimonious.grammar import Grammar
@@ -94,7 +95,13 @@ class Text(Node):
         if self in irregular_past_verbs:
             self.override(irregular_past_verbs[self])
         else:
-            self.append('d')
+            last_letter = self.characters[-1][-1]
+            if re.match(r'[bcdfghjklmnpqrstvwxz]', last_letter):
+                self.append('ed')
+            elif last_letter == 'y':
+                self.override(re.sub('y$', 'ied', unicode(self)))
+            else:
+                self.append('d')
 
     def plural(self):
         self.override(Inflector().pluralize(unicode(self)))
