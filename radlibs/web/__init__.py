@@ -118,7 +118,7 @@ import radlibs.web.controllers.profile
 def build_menu():
     if g.user:
         return {'menu': [
-            ('api', 'The Api'),
+            ('api', 'The API'),
             ('language', 'The Language'),
             ('list_associations', 'Associations'),
             ('profile', 'Profile'),

@@ -28,7 +28,7 @@ class TestMenu(TestCase):
         with patch('radlibs.web.g', g):
             eq_(build_menu(), {
                 'menu': [
-                    ('api', 'The Api'),
+                    ('api', 'The API'),
                     ('language', 'The Language'),
                     ('list_associations', 'Associations'),
                     ('profile', 'Profile')
