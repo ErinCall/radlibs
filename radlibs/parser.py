@@ -9,6 +9,7 @@ from inflector import Inflector
 
 from radlibs.lib import load_lib
 from radlibs.english.irregular_past_verbs import irregular_past_verbs
+from radlibs.english.indefinite_article import indefinite_article_for_noun
 
 recursion = {'depth': 0}
 
@@ -65,7 +66,21 @@ class Rad(Node):
         self.children.append(child)
 
     def __str__(self):
-        return ''.join([unicode(child) for child in self.children])
+        terms = []
+        for child in self.children:
+            expanded = unicode(child)
+            if type(child) == Lib:
+                try:
+                    antecedent = terms[-2]
+                    if antecedent in ['a', 'an']:
+                        terms[-2] = indefinite_article_for_noun(expanded)
+                except IndexError:
+                    pass
+            terms.append(expanded)
+        return ''.join(terms)
+
+    def __repr__(self):
+        return ''.join([repr(child) for child in self.children])
 
     def indicated_or_last(self):
         for i, child in enumerate(self.children):
@@ -83,6 +98,9 @@ class Text(Node):
         self.characters.append(unicode(text))
 
     def __str__(self):
+        return ''.join(self.characters)
+
+    def __repr__(self):
         return ''.join(self.characters)
 
     def __hash__(self):

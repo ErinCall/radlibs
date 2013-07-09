@@ -1,13 +1,14 @@
 from __future__ import unicode_literals
 
 from mock import patch
-from nose.tools import eq_, assert_raises
+from nose.tools import eq_, assert_raises, nottest
 
 from radlibs.parser import parse, Text, Lib, ParseError
 
 from tests import TestCase, with_libs
 
 
+@nottest
 def test_libs():
     return {
         'Animal': ['cat'],
@@ -202,3 +203,30 @@ class TestParser(TestCase):
         eq_(radlib, 'After defeating the monster, '
             'You find 3 swords of slaying in the chest!')
 
+    def test_indefinite_article__easy_mode(self):
+        libs = {"Animal": ['dik-dik']}
+        with patch('radlibs.parser.load_lib', lambda lib: libs[lib]):
+            radlib = unicode(parse('a <Animal>'))
+
+        eq_(radlib, 'a dik-dik')
+
+    def test_indefinite_article__regular_vowel_beginning(self):
+        libs = {"Animal": ['aardvark']}
+        with patch('radlibs.parser.load_lib', lambda lib: libs[lib]):
+            radlib = unicode(parse('a <Animal>'))
+
+        eq_(radlib, 'an aardvark')
+
+    def test_indefinite_article__vowel_start__many_words(self):
+        libs = {"Meat": ["aardvark tongue"]}
+        with patch('radlibs.parser.load_lib', lambda lib: libs[lib]):
+            radlib = unicode(parse('a <Meat>'))
+
+        eq_(radlib, 'an aardvark tongue')
+
+    def test_indefinite_article_hour(self):
+        libs = {'Time_unit': ['hour']}
+        with patch('radlibs.parser.load_lib', lambda lib: libs[lib]):
+            radlib = unicode(parse('a <Time_unit>'))
+
+        eq_(radlib, 'an hour')
