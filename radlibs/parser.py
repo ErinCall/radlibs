@@ -16,8 +16,8 @@ recursion = {'depth': 0}
 grammar = Grammar("""
     contents = rad*
     rad       = (word indicator?) / (lib indicator?) / whitespace
-    lib       = "<" modifier* lib_name ">" inflector?
-    modifier  = "!"
+    lib       = "<" modifier? lib_name ">" inflector?
+    modifier  = "!" / "/" / "&" / "."
     lib_name  = ~"[A-Z]" ~"[a-z_]*"
     word      = literal / letter+
     whitespace = ~"[\s]"
@@ -137,6 +137,11 @@ class Text(Node):
     def modify(self, modifier):
         if modifier == '!':
             self.override(unicode(self).upper())
+        elif modifier == '/':
+            self.override(unicode(self).lower())
+        else:
+            raise ParseError(
+                'Text node got unexpected modifier {0}' + modifier)
 
 
 PAST_TENSE = 'past'
@@ -160,7 +165,7 @@ class Lib(Node):
         try:
             recursion['depth'] += 1
             sub_rad = parse(choice(lib))
-            if self.modifier is not None:
+            if self.modifier in ['!', '/']:
                 sub_rad.modify(self.modifier)
 
             if self.tense == PAST_TENSE:
@@ -171,7 +176,12 @@ class Lib(Node):
                 word = sub_rad.indicated_or_last()
                 word.plural()
 
-            return unicode(sub_rad)
+            contents = unicode(sub_rad)
+            if self.modifier == '&':
+                contents = contents[0].upper() + contents[1:]
+            elif self.modifier == '.':
+                contents = contents[0].lower() + contents[1:]
+            return contents
         except ParseError as e:
             error = "{0} (found inside {1})".format(e.message, self.lib_name)
             raise ParseError(error)

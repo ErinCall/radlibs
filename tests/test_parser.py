@@ -242,3 +242,46 @@ class TestParser(TestCase):
         with patch('radlibs.parser.load_lib', lambda lib: libs[lib]):
             radlib = unicode(parse('the headlines read <!Headline> that day'))
         eq_(radlib, 'the headlines read MAN BITES DOG that day')
+
+    def test_modifier__slash_is_lowercase(self):
+        libs = {'Animal': ['ORCA']}
+        with patch('radlibs.parser.load_lib', lambda lib: libs[lib]):
+            radlib = unicode(parse('</Animal>'))
+        eq_(radlib, 'orca')
+
+    def test_modifier__ampersand_is_uppercase_first_word(self):
+        libs = {
+            'Food': ["pork belly"],
+            'One': ['one'],
+            'Outer': ['<One> <Food>'],
+        }
+        with patch('radlibs.parser.load_lib', lambda lib: libs[lib]):
+            radlib = unicode(parse('<&Outer>'))
+        eq_(radlib, 'One pork belly')
+
+    def test_modifier__period_is_lowercase_first_word(self):
+        libs = {
+            'Food': ["PORK BELLY"],
+            'One': ['ONE'],
+            'Outer': ['<One> <Food>'],
+        }
+        with patch('radlibs.parser.load_lib', lambda lib: libs[lib]):
+            radlib = unicode(parse('<.Outer>'))
+        eq_(radlib, 'oNE PORK BELLY')
+
+    def test_exactly_one_or_zero_case_modifiers_are_legal(self):
+        plaintext = '<!/Confused>'
+        with assert_raises(ParseError) as error:
+            parse(plaintext)
+        eq_(error.exception.message,
+            "Unexpected token '<' at line 1 character 1 of '<!/Confused>'")
+
+        plaintext = '<&.Confused>'
+        with assert_raises(ParseError) as error:
+            parse(plaintext)
+        eq_(error.exception.message,
+            "Unexpected token '<' at line 1 character 1 of '<&.Confused>'")
+
+    def test_literal_modifiers(self):
+        plaintext = '!/&'
+        eq_(unicode(parse(plaintext)), plaintext)
