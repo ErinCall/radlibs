@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 import re
+import radlibs.lib
 from flask import render_template, g, request, abort
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
@@ -61,13 +62,14 @@ def new_rad(lib_id):
         return error_response('login required')
     session = Client().session()
     try:
-        find_lib(lib_id)
+        lib = find_lib(lib_id)
     except NoResultFound:
         return error_response('no such lib')
     rad = Rad(created_by=g.user.user_id,
               lib_id=lib_id,
               rad=request.form['rad'])
     session.add(rad)
+    radlibs.lib.decache_lib(lib.name, lib.association_id)
     return {'status': 'ok'}
 
 
@@ -94,6 +96,7 @@ def new_rad_by_name():
               lib_id=lib.lib_id,
               rad=request.form['rad'])
     session.add(rad)
+    radlibs.lib.decache_lib(lib.name, lib.association_id)
     return {'status': 'ok'}
 
 

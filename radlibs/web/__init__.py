@@ -9,7 +9,7 @@ from flask import Flask, render_template, g, session, request
 from sqlalchemy.orm.exc import NoResultFound
 from radlibs import Client
 from radlibs.table.user import User
-from radlibs.lib import flush_cache
+from werkzeug.contrib.cache import RedisCache, SimpleCache
 
 PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
 app = Flask(__name__, static_folder=os.path.join(PROJECT_ROOT, 'static'),
@@ -38,10 +38,14 @@ Message:
 '''))
     app.logger.addHandler(mail_handler)
 
+if 'MYREDIS_URL' in os.environ:
+    app.cache = RedisCache(os.environ['MYREDIS_URL'])
+else:
+    app.cache = SimpleCache()
+
 
 @app.before_request
 def before_request():
-    flush_cache()
     if not hasattr(g, 'user'):
         g.user = None
     if 'user' in session:

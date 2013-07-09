@@ -74,9 +74,6 @@ class TestLoadLib(TestCase):
 
         eq_(lib, ['bubble tea'])
 
-        eq_(radlibs.lib.LIBS,
-            {'{0}:{1}'.format(watercooler.association_id, 'Food'): ['bubble tea']})
-
     @raises(KeyError)
     @patch('radlibs.lib.g')
     def test_no_such_lib_raises_keyerror(self, g):

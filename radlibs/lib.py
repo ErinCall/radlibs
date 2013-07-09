@@ -2,15 +2,14 @@ from __future__ import unicode_literals
 
 from flask import g
 from radlibs import Client
+from radlibs.web import app
 from radlibs.table.radlib import Rad, Lib
-
-
-LIBS = {}
 
 
 def load_lib(lib_name):
     lib_key = '{0}:{1}'.format(g.association_id, lib_name)
-    if lib_key not in LIBS:
+    lib = app.cache.get(lib_key)
+    if not lib:
         session = Client().session()
         lib = session.query(Rad.rad).\
             join(Lib, Lib.lib_id == Rad.lib_id).\
@@ -20,10 +19,12 @@ def load_lib(lib_name):
 
         if not lib:
             raise KeyError(lib_name)
-        LIBS[lib_key] = [x[0] for x in lib]
-    return LIBS[lib_key]
+        lib = [rad[0] for rad in lib]
+        app.cache.set(lib_key, lib)
+    return lib
 
 
-def flush_cache():
-    global LIBS
-    LIBS = {}
+def decache_lib(lib_name, association_id):
+    Client().session().flush()
+    lib_key = '{0}:{1}'.format(association_id, lib_name)
+    app.cache.delete(lib_key)

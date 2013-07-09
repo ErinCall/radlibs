@@ -6,6 +6,7 @@ import time
 from functools import wraps
 from sqlalchemy import create_engine
 from flask import appcontext_pushed, g
+from werkzeug.contrib.cache import NullCache
 
 import radlibs
 from radlibs.web import app
@@ -24,7 +25,6 @@ class TestCase(unittest.TestCase):
 
     def tearDown(self):
         radlibs.Client().session().rollback()
-        radlibs.lib.LIBS = {}
 
 
 db_info = {}
@@ -35,6 +35,7 @@ def setUpPackage():
     create_temp_database()
     temp_db_url = 'postgresql://localhost/%s' % db_info['temp_db_name']
     db_info['engine'] = create_engine(temp_db_url)
+    app.cache = NullCache()
 
     apply_migrations(temp_db_url)
 
