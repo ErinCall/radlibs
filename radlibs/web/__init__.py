@@ -39,8 +39,8 @@ Message:
 '''))
     app.logger.addHandler(mail_handler)
 
-if 'MYREDIS_URL' in os.environ:
-    redis_client = redis.StrictRedis.from_url(os.environ['MYREDIS_URL'])
+if 'REDISTOGO_URL' in os.environ:
+    redis_client = redis.StrictRedis.from_url(os.environ['REDISTOGO_URL'])
     app.cache = RedisCache(redis_client)
 else:
     app.cache = SimpleCache()
