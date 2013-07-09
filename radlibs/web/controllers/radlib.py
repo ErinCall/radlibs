@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from flask import render_template, g, request, abort
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 from radlibs import Client
 from radlibs.web import app
@@ -29,7 +30,10 @@ def create_lib(association_id):
     lib = Lib(association_id=association_id,
               name=name)
     session.add(lib)
-    session.flush()
+    try:
+        session.flush()
+    except IntegrityError:
+        return error_response('lib already exists')
     return {'status': 'ok', 'lib_id': lib.lib_id}
 
 

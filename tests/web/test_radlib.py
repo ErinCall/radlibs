@@ -30,6 +30,25 @@ class TestRadLib(TestCase):
             })
 
     @logged_in
+    def test_create_new_lib__lib_already_exists(self, user):
+        session = Client().session()
+        association_id = self.create_association(user)
+        lib = Lib(name="Rant", association_id=association_id)
+        session.add(lib)
+        session.flush()
+
+        response = self.app.post(
+            '/association/{0}/lib/new'.format(association_id),
+            data={"name": "Rant"})
+
+        eq_(response.status_code, 200, response.data)
+        body = json.loads(response.data)
+        eq_(body, {
+            'status': 'error',
+            'error': 'lib already exists'
+            })
+
+    @logged_in
     def test_create_new_lib__association_id_is_required(self, user):
         response = self.app.post(
             '/association/8/lib/new', data={"name": "Buffoonery"})
