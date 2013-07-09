@@ -9,6 +9,7 @@ from flask import Flask, render_template, g, session, request
 from sqlalchemy.orm.exc import NoResultFound
 from radlibs import Client
 from radlibs.table.user import User
+from radlibs.lib import flush_cache
 
 PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
 app = Flask(__name__, static_folder=os.path.join(PROJECT_ROOT, 'static'),
@@ -40,6 +41,7 @@ Message:
 
 @app.before_request
 def before_request():
+    flush_cache()
     if not hasattr(g, 'user'):
         g.user = None
     if 'user' in session:
