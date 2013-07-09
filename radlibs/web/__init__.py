@@ -4,6 +4,7 @@ import sha
 import os
 import logging
 import datetime
+import redis
 from logging.handlers import SMTPHandler
 from flask import Flask, render_template, g, session, request
 from sqlalchemy.orm.exc import NoResultFound
@@ -39,7 +40,8 @@ Message:
     app.logger.addHandler(mail_handler)
 
 if 'MYREDIS_URL' in os.environ:
-    app.cache = RedisCache(os.environ['MYREDIS_URL'])
+    redis_client = redis.StrictRedis.from_url(os.environ['MYREDIS_URL'])
+    app.cache = RedisCache(redis_client)
 else:
     app.cache = SimpleCache()
 
