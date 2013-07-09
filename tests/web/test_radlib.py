@@ -64,7 +64,7 @@ class TestRadLib(TestCase):
         eq_(body, {'status': 'error', 'error': 'login required'})
 
     @logged_in
-    def test_libcase_is_necessary(self, user):
+    def test_new_lib__validate_name(self, user):
         association_id = self.create_association(user)
 
         response = self.app.post(

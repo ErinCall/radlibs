@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+import re
 from flask import render_template, g, request, abort
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
@@ -7,7 +8,6 @@ from radlibs import Client
 from radlibs.web import app
 from radlibs.table.association import Association, UserAssociation
 from radlibs.table.radlib import Rad, Lib
-from radlibs.parser import parse, ParseError
 from radlibs.web.json_endpoint import json_endpoint, error_response
 from radlibs.web.breadcrumbs import breadcrumbs
 
@@ -18,9 +18,7 @@ def create_lib(association_id):
     if not g.user:
         return error_response('login required')
     name = request.form['name']
-    try:
-        parse('<{0}>'.format(name))
-    except ParseError:
+    if not re.search('^[A-Z]\w*$', name):
         return error_response("'{0}' is not a valid lib name".format(name))
     session = Client().session()
     try:
