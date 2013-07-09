@@ -20,7 +20,13 @@ def load_lib(lib_name):
         if not lib:
             raise KeyError(lib_name)
         lib = [rad[0] for rad in lib]
-        app.cache.set(lib_key, lib)
+        #does this look wrong? I think so too. There is a bug in the werkzeug
+        #redis cache library where it reverses the timeout and value arguments
+        #to redis.setex.
+        #and of course we need to manually call dump_object, which the cache
+        #would normally do for us, because it messes up and calls dump_object
+        #on the timeout...
+        app.cache.set(lib_key, 60*60, timeout=app.cache.dump_object(lib))
     return lib
 
 
