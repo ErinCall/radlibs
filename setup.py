@@ -26,6 +26,7 @@ setup(name="radlibs",
           'requests',
           'blinker',
           'inflector',
+          'redis',
 
           "nose",
           'mock',
