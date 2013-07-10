@@ -1,5 +1,6 @@
 {% extends 'layout.html.jinja' %}
 {% set menu_page = 'list_associations' %}
+{% set js_page = 'view_lib' %}
 {% set page_title = lib.name %}
 {% block content %}
 <div class='jumbotron'>
@@ -21,5 +22,4 @@
 <script>
 	$( 'body' ).data( 'new_rad_url', "{{ url_for('new_rad', lib_id=lib.lib_id) }}" );
 </script>
-<script src="/static/js/view_lib.js"></script>
 {% endblock scripts %}

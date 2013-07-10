@@ -98,10 +98,12 @@
 
 
 	$(document).ready(function() {
-		$( '#radlib-form' ).submit( submit_radlib );
-		$( '#fire' ).click(submit_radlib);
-		$( '#radlib' ).focus().select();
-		$( '.edit-button' ).click( edit_lib_title );
-		radlibs.draw_new_lib_button( new_lib );
+		if ( $( 'body' ).data( 'current_page' ) === 'live_demo' ) {
+			$( '#radlib-form' ).submit( submit_radlib );
+			$( '#fire' ).click(submit_radlib);
+			$( '#radlib' ).focus().select();
+			$( '.edit-button' ).click( edit_lib_title );
+			radlibs.draw_new_lib_button( new_lib );
+		}
 	});
 })();

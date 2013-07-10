@@ -17,7 +17,7 @@
 
 </head>
 
-<body>
+<body {% if js_page is defined %}data-current_page="{{ js_page }}"{% endif %}}>
     <div class="container-narrow">
         <header>
             <ul class="nav nav-pills pull-right">
@@ -77,6 +77,10 @@
     <script src="/static/js/underscore-min.js"></script>
     <script src="/static/js/radlibs.js"></script>
     <script src="/static/js/janrain.js"></script>
+    <script src="/static/js/live_demo.js"></script>
+    <script src="/static/js/invitation_registration.js"></script>
+    <script src="/static/js/edit_association.js"></script>
+    <script src="/static/js/view_lib.js"></script>
     {%block scripts %}{%endblock%}
 </body>
 </html>

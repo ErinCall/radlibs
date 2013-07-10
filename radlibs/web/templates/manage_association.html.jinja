@@ -1,6 +1,7 @@
 {% extends "layout.html.jinja" %}
 {% set page_title = association.name %}
 {% set menu_page = 'list_associations' %}
+{% set js_page = 'manage_associations' %}
 {% block content %}
 <div class="jumbotron">
 	<h1>{{ association.name |e}}</h1>
@@ -45,7 +46,6 @@
 {% endfor %}
 {% endblock content %}
 {% block scripts %}
-	<script src="/static/js/edit_association.js"></script>
 	<script>
 		$(document).ready(function() {
 			$( 'body' ).data( 'new_lib_url', "{{ url_for('create_lib', association_id = association.association_id)}}" );

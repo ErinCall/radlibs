@@ -153,9 +153,11 @@
 	};
 
 	$(document).ready(function() {
-		radlibs.draw_new_lib_button(new_lib);
-		draw_new_member_button();
-		$( '#fire' ).click( test_radlib );
-		$( '#radlib-form' ).submit( test_radlib );
+		if ( $( 'body' ).data( 'current_page' ) === 'manage_associations' ) {
+			radlibs.draw_new_lib_button(new_lib);
+			draw_new_member_button();
+			$( '#fire' ).click( test_radlib );
+			$( '#radlib-form' ).submit( test_radlib );
+		}
 	});
 })();

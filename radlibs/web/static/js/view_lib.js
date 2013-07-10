@@ -49,6 +49,8 @@
 	};
 
 	$( document ).ready( function() {
-		$( '#new-rad' ).click( new_rad );
+		if ( $( 'body' ).data( 'current_page' ) === 'view_lib' ) {
+			$( '#new-rad' ).click( new_rad );
+		}
 	});
 })();

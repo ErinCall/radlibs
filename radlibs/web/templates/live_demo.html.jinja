@@ -1,6 +1,7 @@
 {%extends 'layout.html.jinja'%}
 {% set page_title = 'Live Demo' %}
 {% set menu_page = 'live_demo' %}
+{% set js_page = menu_page %}
 {%block content%}
 <div class="jumbotron">
 	<form action="" id='radlib-form'>
@@ -93,6 +94,3 @@ miracle whip</textarea>
 	</div>
 </div>
 {%endblock content%}
-{%block scripts%}
-<script src="/static/js/live_demo.js"></script>
-{%endblock scripts%}
