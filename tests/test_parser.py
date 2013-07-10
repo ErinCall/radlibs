@@ -288,10 +288,10 @@ class TestParser(TestCase):
 
     def test_hyphenate(self):
         libs = {'Animal': ['death head moth']}
-        plaintext = '<-Animal>-esque'
+        plaintext = 'It was <-Animal>-esque'
         with patch('radlibs.parser.load_lib', lambda lib: libs[lib]):
             radlib = unicode(parse(plaintext))
-        eq_(radlib, 'death-head-moth-esque')
+        eq_(radlib, 'It was death-head-moth-esque')
 
     def test_modifiers_and_case_modifiers_in_any_order(self):
         libs = {'Framework': ['django']}

@@ -72,6 +72,9 @@ class Rad(Node):
         if self.case_modifier:
             child.modify_case(self.case_modifier)
             self.case_modifier = None
+        if self.modifier:
+            child.modify(self.modifier)
+            self.modifier = None
 
     def __str__(self):
         terms = []
