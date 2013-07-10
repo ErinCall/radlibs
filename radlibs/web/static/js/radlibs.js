@@ -1,6 +1,7 @@
 (function () {
 	'use strict';
-	var show_signin_widget;
+	var show_signin_widget,
+		accept_button;
 	if (typeof window.radlibs === "undefined" ) {
 		window.radlibs = {};
 	}
@@ -128,7 +129,7 @@
 		$error.text( error );
 	};
 
-	window.radlibs.accept_button = function() {
+	accept_button = function() {
 		var $link,
 			$image;
 
@@ -142,6 +143,30 @@
 		$link.append( $image );
 
 		return $link;
+	};
+
+	window.radlibs.form_input = function( initial_text, handler ) {
+		var $form,
+			$input,
+			$button;
+		$input = $( '<input>' );
+		$input.val( initial_text );
+		$input.css( 'width', '80%' );
+
+		$button = accept_button();
+
+		$form = $( '<form>' );
+		$form.append( $input );
+		$form.append( $button );
+
+		$form.on( 'visible', function() {
+			$input.focus().select();
+		});
+
+		$button.click( handler );
+		$form.submit( handler );
+
+		return $form;
 	};
 
 	show_signin_widget = function(event) {

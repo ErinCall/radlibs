@@ -9,27 +9,21 @@
 		var $new_lib_button,
 			$contents_div,
 			$lib_div,
-			$input,
 			$form,
-			submit_lib,
-			$submit_link;
+			submit_lib;
 
 		$new_lib_button = $( '#new-lib-button' );
 		$contents_div = $( '<div>' );
 		$contents_div.addClass( 'span4' );
 		$lib_div = $( '<div>' );
 		$lib_div.addClass( 'lib-display' );
-		$input = $( '<input>' );
-		$input.css('width', '80%');
-		$form = $( '<form>' );
-		$submit_link = radlibs.accept_button();
 
 		submit_lib = function( event ) {
 			event.preventDefault();
 			var lib_name,
 				new_lib_url;
 
-			lib_name = $input.val().trim();
+			lib_name = $form.find( 'input' ).val().trim();
 			new_lib_url = $( 'body' ).data( 'new_lib_url' );
 
 			$.ajax( new_lib_url, {
@@ -56,11 +50,9 @@
 			});
 		};
 
-		$form.submit( submit_lib );
-		$submit_link.click( submit_lib );
-		$form.append( $input );
-		$form.append( $submit_link );
+		$form = radlibs.form_input( '', submit_lib );
 		$contents_div.append( $form );
+		$form.trigger( 'visible' );
 		$contents_div.append( $lib_div );
 		$new_lib_button.detach();
 		radlibs.row_with_vacancy( 'lib-row' ).append( $contents_div );
@@ -109,13 +101,7 @@
 		invite_user = function( event ) {
 			event.preventDefault();
 			var $form,
-				$input,
-				send_invite,
-				$submit_link;
-
-			$form = $( '<form>' );
-			$input = $( '<input>' );
-			$submit_link = radlibs.accept_button();
+				send_invite;
 
 			send_invite = function( event ) {
 				event.preventDefault();
@@ -155,13 +141,11 @@
 				});
 			};
 
-			$form.append( $input );
-			$form.append( $submit_link );
-			$form.submit( send_invite );
-			$submit_link.click( send_invite );
+			$form = radlibs.form_input( '', send_invite );
+
 			$new_member_div.detach();
 			$row.append( $form );
-			$input.focus();
+			$form.trigger( 'visible' );
 		};
 
 		$new_member_link.click( invite_user );

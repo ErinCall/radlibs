@@ -12,24 +12,13 @@
 			$this = $( this );
 
 		$parent = $this.parent();
-		$form = $( '<form>' );
-		$input = $( '<input>' );
-		$input.css( 'width', '80%' );
-		$done_link = radlibs.accept_button();
-
-		$form.append( $input );
-		$form.append( $done_link );
-
-		$this.detach();
-		$parent.append( $form );
-		$input.focus();
 
 		submit_rad = function ( event ) {
 			event.preventDefault();
 			var new_rad_url,
 				rad;
 
-			rad = $input.val().trim();
+			rad = $form.find( 'input' ).val().trim();
 			new_rad_url = $( 'body' ).data( 'new_rad_url' );
 
 			$.ajax( new_rad_url, {
@@ -52,8 +41,11 @@
 				}
 			});
 		};
-		$form.submit( submit_rad );
-		$done_link.click( submit_rad );
+		$form = radlibs.form_input( '', submit_rad );
+
+		$this.detach();
+		$parent.append( $form );
+		$form.trigger( 'visible' );
 	};
 
 	$( document ).ready( function() {

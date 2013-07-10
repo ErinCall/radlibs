@@ -60,9 +60,7 @@
 			$header,
 			$form,
 			$anchor,
-			$input,
 			$textarea,
-			$done_link,
 			done_editing,
 			$this = $(this);
 
@@ -75,25 +73,11 @@
 		$header = $container.find( 'h4' );
 		$textarea = $container.find( 'textarea' );
 
-		$input = $( '<input>' );
-		$input.val( $header.text().trim() );
-		$input.css( 'width', '80%' );
-
-		$done_link = radlibs.accept_button();
-
-		$form = $( '<form>' );
-		$form.append( $input );
-		$form.append( $done_link );
-		$header.detach();
-		$container.prepend( $form );
-
-		$input.focus().select();
-
 		done_editing = function ( event ) {
 			event.preventDefault();
 			var new_title;
 
-			new_title = $input.val();
+			new_title = $form.find( 'input' ).val();
 			$header.text(radlibs.libcase(new_title));
 			$container.prepend($header);
 			$header.append($anchor);
@@ -105,8 +89,11 @@
 			$textarea.attr('name', new_title);
 		};
 
-		$form.submit(done_editing);
-		$done_link.click(done_editing);
+		$form = radlibs.form_input( $header.text().trim(), done_editing );
+		$header.detach();
+		$container.prepend( $form );
+
+		$form.trigger( 'visible' );
 	};
 
 
