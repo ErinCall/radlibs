@@ -40,7 +40,7 @@ Message:
     app.logger.addHandler(mail_handler)
 
 if 'REDISTOGO_URL' in os.environ:
-    redis_client = redis.StrictRedis.from_url(os.environ['REDISTOGO_URL'])
+    redis_client = redis.from_url(os.environ['REDISTOGO_URL'])
     app.cache = RedisCache(redis_client)
 else:
     app.cache = SimpleCache()
