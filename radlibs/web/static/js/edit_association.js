@@ -12,8 +12,7 @@
 			$input,
 			$form,
 			submit_lib,
-			$submit_link,
-			$submit_button;
+			$submit_link;
 
 		$new_lib_button = $( '#new-lib-button' );
 		$contents_div = $( '<div>' );
@@ -23,12 +22,7 @@
 		$input = $( '<input>' );
 		$input.css('width', '80%');
 		$form = $( '<form>' );
-		$submit_link = $( '<a>' );
-		$submit_link.attr( 'href', '#' );
-		$submit_button = $( '<img>' );
-		$submit_button.attr( 'src', '/static/img/accept-icon.png' );
-		$submit_button.css( 'margin-left', '10px');
-		$submit_button.attr( 'alt', 'send' );
+		$submit_link = radlibs.accept_button();
 
 		submit_lib = function( event ) {
 			event.preventDefault();
@@ -64,7 +58,6 @@
 
 		$form.submit( submit_lib );
 		$submit_link.click( submit_lib );
-		$submit_link.append( $submit_button );
 		$form.append( $input );
 		$form.append( $submit_link );
 		$contents_div.append( $form );
@@ -118,18 +111,11 @@
 			var $form,
 				$input,
 				send_invite,
-				$submit_link,
-				$submit_button;
+				$submit_link;
 
 			$form = $( '<form>' );
 			$input = $( '<input>' );
-			$submit_link = $( '<a>' );
-			$submit_link.attr( 'href', '#' );
-			$submit_button = $( '<img>' );
-			$submit_button.attr( 'src', '/static/img/accept-icon.png' );
-			$submit_button.css( 'margin-left', '10px');
-			$submit_button.attr( 'alt', 'send' );
-			$submit_link.append( $submit_button );
+			$submit_link = radlibs.accept_button();
 
 			send_invite = function( event ) {
 				event.preventDefault();

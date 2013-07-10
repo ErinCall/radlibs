@@ -128,6 +128,22 @@
 		$error.text( error );
 	};
 
+	window.radlibs.accept_button = function() {
+		var $link,
+			$image;
+
+		$image = $( '<img>' );
+		$image.attr( 'src', '/static/img/accept-icon.png' );
+		$image.attr( 'alt', 'done' );
+		$image.css( 'margin-left', '10px' );
+
+		$link = $( '<a>' );
+		$link.attr( 'href', '#' );
+		$link.append( $image );
+
+		return $link;
+	};
+
 	show_signin_widget = function(event) {
 		event.preventDefault();
 		$( '#janrainEngageEmbed' ).toggle();

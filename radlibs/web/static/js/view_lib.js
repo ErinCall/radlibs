@@ -4,8 +4,7 @@
 
 	new_rad = function( event ) {
 		event.preventDefault();
-		var $done_button,
-			$done_link,
+		var $done_link,
 			$form,
 			$input,
 			$parent,
@@ -16,13 +15,7 @@
 		$form = $( '<form>' );
 		$input = $( '<input>' );
 		$input.css( 'width', '80%' );
-		$done_link = $( '<a>' );
-		$done_link.attr( 'href', '#' );
-		$done_button = $( '<img>' );
-		$done_button.attr( 'src', '/static/img/accept-icon.png' );
-		$done_button.attr( 'alt', 'done' );
-		$done_button.css( 'margin-left', '10px' );
-		$done_link.append( $done_button );
+		$done_link = radlibs.accept_button();
 
 		$form.append( $input );
 		$form.append( $done_link );

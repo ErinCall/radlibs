@@ -63,7 +63,6 @@
 			$input,
 			$textarea,
 			$done_link,
-			$done_button,
 			done_editing,
 			$this = $(this);
 
@@ -80,12 +79,7 @@
 		$input.val( $header.text().trim() );
 		$input.css( 'width', '80%' );
 
-		$done_link = $( '<a>' );
-		$done_button = $( '<img>' );
-		$done_button.attr( 'src', '/static/img/accept-icon.png' );
-		$done_button.attr( 'alt', 'done' );
-		$done_button.css( 'margin-left', '10px' );
-		$done_link.append($done_button);
+		$done_link = radlibs.accept_button();
 
 		$form = $( '<form>' );
 		$form.append( $input );
@@ -112,7 +106,7 @@
 		};
 
 		$form.submit(done_editing);
-		$done_button.click(done_editing);
+		$done_link.click(done_editing);
 	};
 
 
