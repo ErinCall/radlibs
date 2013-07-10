@@ -16,8 +16,10 @@ recursion = {'depth': 0}
 grammar = Grammar("""
     contents = rad*
     rad           = (word indicator?) / (lib indicator?) / whitespace
-    lib           = "<" case_modifier? lib_name ">" inflector?
+    lib           = "<" mod lib_name ">" inflector?
+    mod           = modifier? case_modifier? modifier?
     case_modifier = "!" / "/" / "&" / "."
+    modifier      = "-"
     lib_name      = ~"[A-Z]" ~"[a-z_]*"
     word          = literal / letter+
     whitespace    = ~"[\s]"
@@ -60,6 +62,7 @@ class Node(object):
 class Rad(Node):
     children = None
     case_modifier = None
+    modifier = None
 
     def __init__(self):
         self.children = []
@@ -75,6 +78,8 @@ class Rad(Node):
         for child in self.children:
             if self.case_modifier is not None:
                 child.modify_case(self.case_modifier)
+            if self.modifier is not None:
+                child.modify(self.modifier)
             expanded = unicode(child)
             if type(child) == Lib:
                 try:
@@ -96,6 +101,9 @@ class Rad(Node):
 
     def modify_case(self, case_modifier):
         self.case_modifier = case_modifier
+
+    def modify(self, modifier):
+        self.modifier = modifier
 
 
 class Text(Node):
@@ -143,6 +151,10 @@ class Text(Node):
             raise ParseError(
                 'Text node got unexpected case_modifier {0}' + case_modifier)
 
+    def modify(self, modifier):
+        if modifier == '-':
+            self.override(unicode(self).replace(' ', '-'))
+
 
 PAST_TENSE = 'past'
 PRESENT_TENSE = 'present'
@@ -154,6 +166,7 @@ class Lib(Node):
     tense = PRESENT_TENSE
     is_plural = False
     case_modifier = None
+    modifier = None
 
     def __init__(self, lib_name):
         self.lib_name = lib_name
@@ -167,6 +180,8 @@ class Lib(Node):
             sub_rad = parse(choice(lib))
             if self.case_modifier in ['!', '/']:
                 sub_rad.modify_case(self.case_modifier)
+            if self.modifier is not None:
+                sub_rad.modify(self.modifier)
 
             if self.tense == PAST_TENSE:
                 word = sub_rad.indicated_or_last()
@@ -200,6 +215,9 @@ class Lib(Node):
     def modify_case(self, case_modifier):
         self.case_modifier = case_modifier
 
+    def modify(self, modifier):
+        self.modifier = modifier
+
 
 class RadParser(NodeVisitor):
     def __init__(self, text):
@@ -226,6 +244,9 @@ class RadParser(NodeVisitor):
 
     def visit_case_modifier(self, node, visited_children):
         self.rad.modify_case(node.text)
+
+    def visit_modifier(self, node, visited_children):
+        self.rad.modify(node.text)
 
     def visit_inflector(self, node, visited_children):
         if node.text == 'd':
