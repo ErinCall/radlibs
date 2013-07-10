@@ -15,16 +15,16 @@ recursion = {'depth': 0}
 
 grammar = Grammar("""
     contents = rad*
-    rad       = (word indicator?) / (lib indicator?) / whitespace
-    lib       = "<" modifier? lib_name ">" inflector?
-    modifier  = "!" / "/" / "&" / "."
-    lib_name  = ~"[A-Z]" ~"[a-z_]*"
-    word      = literal / letter+
-    whitespace = ~"[\s]"
-    indicator = "^"
-    inflector = "d" / "s"
-    letter    = ~"[^^<>\s\\\\\\]"
-    literal   = "\\<" / "\\>" / "\\d" / "\\^" / "\\s"
+    rad           = (word indicator?) / (lib indicator?) / whitespace
+    lib           = "<" case_modifier? lib_name ">" inflector?
+    case_modifier = "!" / "/" / "&" / "."
+    lib_name      = ~"[A-Z]" ~"[a-z_]*"
+    word          = literal / letter+
+    whitespace    = ~"[\s]"
+    indicator     = "^"
+    inflector     = "d" / "s"
+    letter        = ~"[^^<>\s\\\\\\]"
+    literal       = "\\<" / "\\>" / "\\d" / "\\^" / "\\s"
 """)
 
 
@@ -59,22 +59,22 @@ class Node(object):
 
 class Rad(Node):
     children = None
-    modifier = None
+    case_modifier = None
 
     def __init__(self):
         self.children = []
 
     def append(self, child):
         self.children.append(child)
-        if self.modifier:
-            child.modify(self.modifier)
-            self.modifier = None
+        if self.case_modifier:
+            child.modify_case(self.case_modifier)
+            self.case_modifier = None
 
     def __str__(self):
         terms = []
         for child in self.children:
-            if self.modifier is not None:
-                child.modify(self.modifier)
+            if self.case_modifier is not None:
+                child.modify_case(self.case_modifier)
             expanded = unicode(child)
             if type(child) == Lib:
                 try:
@@ -94,8 +94,8 @@ class Rad(Node):
             if child.indicated or (i + 1 == len(self.children)):
                 return child
 
-    def modify(self, modifier):
-        self.modifier = modifier
+    def modify_case(self, case_modifier):
+        self.case_modifier = case_modifier
 
 
 class Text(Node):
@@ -134,14 +134,14 @@ class Text(Node):
     def plural(self):
         self.override(Inflector().pluralize(unicode(self)))
 
-    def modify(self, modifier):
-        if modifier == '!':
+    def modify_case(self, case_modifier):
+        if case_modifier == '!':
             self.override(unicode(self).upper())
-        elif modifier == '/':
+        elif case_modifier == '/':
             self.override(unicode(self).lower())
         else:
             raise ParseError(
-                'Text node got unexpected modifier {0}' + modifier)
+                'Text node got unexpected case_modifier {0}' + case_modifier)
 
 
 PAST_TENSE = 'past'
@@ -153,7 +153,7 @@ class Lib(Node):
     lib_name = None
     tense = PRESENT_TENSE
     is_plural = False
-    modifier = None
+    case_modifier = None
 
     def __init__(self, lib_name):
         self.lib_name = lib_name
@@ -165,8 +165,8 @@ class Lib(Node):
         try:
             recursion['depth'] += 1
             sub_rad = parse(choice(lib))
-            if self.modifier in ['!', '/']:
-                sub_rad.modify(self.modifier)
+            if self.case_modifier in ['!', '/']:
+                sub_rad.modify_case(self.case_modifier)
 
             if self.tense == PAST_TENSE:
                 word = sub_rad.indicated_or_last()
@@ -177,9 +177,9 @@ class Lib(Node):
                 word.plural()
 
             contents = unicode(sub_rad)
-            if self.modifier == '&':
+            if self.case_modifier == '&':
                 contents = contents[0].upper() + contents[1:]
-            elif self.modifier == '.':
+            elif self.case_modifier == '.':
                 contents = contents[0].lower() + contents[1:]
             return contents
         except ParseError as e:
@@ -197,8 +197,8 @@ class Lib(Node):
     def __repr__(self):
         return '<{0}>'.format(self.lib_name)
 
-    def modify(self, modifier):
-        self.modifier = modifier
+    def modify_case(self, case_modifier):
+        self.case_modifier = case_modifier
 
 
 class RadParser(NodeVisitor):
@@ -224,8 +224,8 @@ class RadParser(NodeVisitor):
     def visit_lib_name(self, node, visited_children):
         self.rad.append(Lib(node.text))
 
-    def visit_modifier(self, node, visited_children):
-        self.rad.modify(node.text)
+    def visit_case_modifier(self, node, visited_children):
+        self.rad.modify_case(node.text)
 
     def visit_inflector(self, node, visited_children):
         if node.text == 'd':
