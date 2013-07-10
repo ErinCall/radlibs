@@ -22,7 +22,7 @@
         <header>
             <ul class="nav nav-pills pull-right">
                 {% for id, text in menu %}
-                    <li {% if active_page == id %}class="active"{% endif %}>
+                    <li {% if menu_page == id %}class="active"{% endif %}>
                         <a href="{{ url_for(id) }}">{{ text }}</a>
                     </li>
                 {% endfor %}
