@@ -56,7 +56,9 @@ Upon opening the chest, you find 5 bolts.</pre>
                 <li><code>/</code>: Change all the text in the expanded lib to lowercase.</li>
                 <li><code>&amp;</code>: Change the first letter of the expanded lib to uppercase.</li>
                 <li><code>.</code>: Change the first letter of the expanded lib to lowercase.</li>
+                <li><code>-</code>: Change all spaces in the expanded lib to hyphens.</li>
             </ul>
+            <p>The first four modifiers, which adjust an expansion's case, are mutually exclusive semantically&em;thus, they are mutually exclusive syntactically. You may have any number of non-case modifiers, but no more than one case modifier.</p>
             <p>If you expect a Lib's expansion to generate a verb or verb phrase, and you want it to come out in the past tense, you can indicate this by putting a <code>d</code> after the lib: <code>&lt;Verb&gt;d</code>.</p>
             <p>If your Rad is a verb phrase, you can indicate which of the words in it is the verb by putting a caret (<code>^</code>) after it: <code>quickly run^ to the store</code>. The caret is not necessary if the verb is the last word in your Rad.</p>
             <p>In the same vein, if you expect a Lib's expansion to generate a noun or noun phrase, and you want it to be plural, put an <code>s</code> after the lib: <code>&lt;Crate&gt;s</code>. Indicate which word in a phrase is the primary noun with a <code>^</code>, just as when indicating the primary verb for tense-modification.</p>
