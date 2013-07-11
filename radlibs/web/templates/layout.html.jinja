@@ -7,9 +7,9 @@
     <meta name="description" content="recursive turing-complete mad libs implementation">
     <meta name="author" content="Andrew Lorente">
 
-    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/static/css/layout.css" rel="stylesheet">
-    <link href="/static/css/bootstrap-responsive.min.css" rel="stylesheet">
+    {% assets "css_all" %}
+        <link href="{{ ASSET_URL }}" rel="stylesheet">
+    {% endassets %}
 
     <link rel="apple-touch-icon"      href="/static/img/favicon-128.png">
     <link rel="icon" type="image/png" href="/static/img/favicon-128.png">
@@ -72,15 +72,9 @@
     <script>
         window.token_url = "{{ url_for('token_url', _external=True) }}?redirect_uri={{ request.path |urlencode}}";
     </script>
-    <script src="/static/js/jquery.min.js"></script>
-    <script src="/static/js/bootstrap.min.js"></script>
-    <script src="/static/js/underscore-min.js"></script>
-    <script src="/static/js/radlibs.js"></script>
-    <script src="/static/js/janrain.js"></script>
-    <script src="/static/js/live_demo.js"></script>
-    <script src="/static/js/invitation_registration.js"></script>
-    <script src="/static/js/edit_association.js"></script>
-    <script src="/static/js/view_lib.js"></script>
+    {% assets "js_all" %}
+        <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {% endassets %}
     {%block scripts %}{%endblock%}
 </body>
 </html>

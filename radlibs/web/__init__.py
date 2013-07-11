@@ -6,11 +6,12 @@ import logging
 import datetime
 import redis
 from logging.handlers import SMTPHandler
+from werkzeug.contrib.cache import RedisCache, SimpleCache
 from flask import Flask, render_template, g, session, request
+from flask.ext.assets import Environment, Bundle
 from sqlalchemy.orm.exc import NoResultFound
 from radlibs import Client
 from radlibs.table.user import User
-from werkzeug.contrib.cache import RedisCache, SimpleCache
 
 PROJECT_ROOT = os.path.dirname(os.path.realpath(__file__))
 app = Flask(__name__, static_folder=os.path.join(PROJECT_ROOT, 'static'),
@@ -44,6 +45,28 @@ if 'REDISTOGO_URL' in os.environ:
     app.cache = RedisCache(redis_client)
 else:
     app.cache = SimpleCache()
+
+if os.getenv('ASSETS_DEBUG'):
+    app.config['ASSETS_DEBUG'] = True
+assets = Environment(app)
+js = Bundle('js/jquery.min.js',
+            'js/bootstrap.min.js',
+            'js/underscore-min.js',
+            'js/radlibs.js',
+            'js/janrain.js',
+            'js/live_demo.js',
+            'js/invitation_registration.js',
+            'js/edit_association.js',
+            'js/view_lib.js',
+            filters='jsmin',
+            output='gen/packed.js')
+assets.register('js_all', js)
+css = Bundle("css/bootstrap.min.css",
+             "css/bootstrap-responsive.min.css",
+             "css/layout.css",
+             filters='cssmin',
+             output='gen/packed.css')
+assets.register('css_all', css)
 
 
 @app.before_request

@@ -3,3 +3,6 @@
 *.pyc
 local_settings.py
 radlibs.egg-info
+.webassets-cache
+packed.js
+packed.css
