@@ -1,4 +1,23 @@
 (function() {
+	'use strict';
+	window.janrainWidgetOnload = function() {
+		var $bypass_div,
+			$bypass_link,
+			$janrain_div;
+
+		if ( $( 'body' ).data( 'bypass_login' ) === true ) {
+			$janrain_div = $( '#janrainEngageEmbed' );
+			$bypass_link = $( '<a>' );
+			$bypass_link.attr( 'href', '/login_bypass' );
+			$bypass_link.text( 'Use dev-only login bypass' );
+			$bypass_div = $( '<div>' );
+			$bypass_div.css( 'background', '#ffff00' );
+			$bypass_div.append( $bypass_link );
+
+			$janrain_div.append( $bypass_div );
+		}
+	};
+
 	var $engage,
 		$some_script;
 	if (typeof window.janrain !== 'object') {
@@ -26,4 +45,5 @@
 
 	$some_script = $( 'script' ).first();
 	$some_script.parent().prepend( $engage );
+
 })();

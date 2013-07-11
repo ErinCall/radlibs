@@ -131,6 +131,33 @@ def test_authorization():
         return error_response('not logged in')
 
 
+@app.route('/login_bypass')
+def login_bypass():
+    if not app.config['DEBUG']:
+        abort(404)
+    return render_template('login_bypass.html.jinja')
+
+
+@app.route('/login_bypass', methods=['POST'])
+def bypass_login():
+    if not app.config['DEBUG']:
+        abort(404)
+    db_session = Client().session()
+    email = request.form['email']
+    identifier = request.form['identifier']
+    try:
+        user = db_session.query(User).\
+            filter(User.identifier == identifier).\
+            one()
+    except NoResultFound:
+        user = User()
+    user.email = email
+    user.identifier = identifier
+    db_session.add(user)
+    session['user'] = {'identifier': identifier, 'email': email}
+    return redirect('/')
+
+
 def provider_for_identifier(identifier):
     parsed = urlparse.urlparse(identifier)
     return {

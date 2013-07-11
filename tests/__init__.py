@@ -96,6 +96,23 @@ def with_libs(libs):
     return decorator
 
 
+def with_config(**kwargs):
+    def decorator(fn):
+        @wraps(fn)
+        def wrapper(*args, **inner_kwargs):
+            orig_config = {}
+            for key, value in kwargs.iteritems():
+                orig_config[key] = app.config[key]
+                app.config[key] = value
+            try:
+                return fn(*args, **inner_kwargs)
+            finally:
+                for key, value in kwargs.iteritems():
+                    app.config[key] = orig_config[key]
+        return wrapper
+    return decorator
+
+
 def logged_in(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):

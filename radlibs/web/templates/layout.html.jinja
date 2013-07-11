@@ -17,7 +17,14 @@
 
 </head>
 
-<body {% if js_page is defined %}data-current_page="{{ js_page }}"{% endif %}}>
+<body
+    {% if js_page is defined %}
+        data-current_page="{{ js_page }}"
+    {% endif %}
+    {% if config['DEBUG'] %}
+        data-bypass_login="true"
+    {% endif %}
+>
     <div class="container-narrow">
         <header>
             <ul class="nav nav-pills pull-right">

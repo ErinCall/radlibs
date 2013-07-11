@@ -7,7 +7,7 @@ from mock import patch, Mock
 from nose.tools import eq_
 from radlibs.table.user import User, EmailVerificationToken
 from radlibs import Client
-from tests import TestCase
+from tests import TestCase, with_config
 
 
 class TestLogin(TestCase):
@@ -223,3 +223,33 @@ class TestLogin(TestCase):
         eq_(response.status_code, 200, response.data)
         body = json.loads(response.data)
         eq_(body, {'status': 'error', 'error': 'not logged in'})
+
+    @with_config(DEBUG='true')
+    def test_bypass_login__existing_user(self):
+        session = Client().session()
+        user = User(identifier='http://www.facebook.com/itsme',
+                    email='me@gmail.com')
+        session.add(user)
+        session.flush()
+
+        response = self.app.post('/login_bypass', data={
+            'email': 'me@gmail.com',
+            'identifier': 'http://www.facebook.com/itsme',
+        })
+        eq_(response.status_code, 302)
+        eq_(response.headers['Location'], 'http://localhost/')
+
+    @with_config(DEBUG='true')
+    def test_bypass_login__new_user(self):
+        session = Client().session()
+
+        response = self.app.post('/login_bypass', data={
+            'email': 'me@gmail.com',
+            'identifier': 'http://www.facebook.com/itsme',
+        })
+        eq_(response.status_code, 302)
+        eq_(response.headers['Location'], 'http://localhost/')
+
+        user = session.query(User).one()
+        eq_(user.email, 'me@gmail.com')
+        eq_(user.identifier, 'http://www.facebook.com/itsme')
