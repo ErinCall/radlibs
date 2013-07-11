@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-import traceback
 
 
 class Singleton(object):
@@ -23,7 +22,5 @@ class Client(Singleton):
         if not self._engine:
             self._engine = create_engine(os.environ['DATABASE_URL'])
         if not self._session:
-            print "### Establishing Session ###"
-            traceback.print_stack()
             self._session = sessionmaker(bind=self._engine)()
         return self._session
