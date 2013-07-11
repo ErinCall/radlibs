@@ -25,15 +25,14 @@
 	{% endif %}
 			<div class="span4">
 				<h4>
-					<a href="{{ url_for('view_lib', lib_id=libs[lib_name]['lib_id']) }}">
-						{{ lib_name |e}}
-					</a>
+					{{ lib_name |e}}
 				</h4>
-				<div class="lib-display">
+				<div class="lib-display" data-lib_id="{{ libs[lib_name]['lib_id'] }}">
 					<ul>
 						{% for rad in libs[lib_name]['rads'] %}
 							<li>{{ rad |e}}</li>
 						{% endfor %}
+						<li><a href="#" class="new-rad">Add new Rad</a></li>
 					</ul>
 				</div>
 			</div>
@@ -51,6 +50,7 @@
 			$( 'body' ).data( 'new_lib_url', "{{ url_for('create_lib', association_id = association.association_id)}}" );
 			$( 'body' ).data( 'test_radlib_url', "{{ url_for('test_radlib', association_id = association.association_id) }}" );
 			$( 'body' ).data( 'invite_user_url', "{{ url_for('invite_user', association_id = association.association_id) }}" );
+			$( 'body' ).data( 'new_rad_url', "{{ url_for('new_rad') }}" );
 		});
 	</script>
 {% endblock scripts %}

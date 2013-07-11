@@ -2,6 +2,7 @@
 	'use strict';
 	var new_lib,
 		test_radlib,
+		add_rad,
 		draw_new_member_button,
 		radlibs = window.radlibs;
 
@@ -10,6 +11,7 @@
 			$contents_div,
 			$lib_div,
 			$form,
+			draw_lib_container,
 			submit_lib;
 
 		$new_lib_button = $( '#new-lib-button' );
@@ -34,14 +36,15 @@
 						body = JSON.parse( data );
 					if ( body[ 'status' ] == 'ok' ) {
 						lib_id = body[ 'lib_id' ];
-						document.location = '/lib/' + lib_id;
+						draw_lib_container( lib_id, lib_name );
 					} else {
 						if ( ! ~ body[ 'error' ].indexOf( 'not a valid lib name' )) {
 							radlibs.display_error(
 								body[ 'error' ] + "\nLib names must be a single capital letter followed by only lower case letters and underscores."
 							);
+						} else {
+							radlibs.display_error( body[ 'error' ]);
 						}
-						radlibs.display_error( body[ 'error' ]);
 					}
 				},
 				error: function(jqXHR, status, errorThrown) {
@@ -50,14 +53,34 @@
 			});
 		};
 
+		draw_lib_container = function( lib_id, lib_name ) {
+			var $h4,
+				$ul,
+				$li,
+				$new_rad_link;
+			$form.remove();
+			$h4 = $( '<h4>' );
+			$h4.text( lib_name );
+			$contents_div.prepend( $h4 );
+			$lib_div.data( 'lib_id', lib_id );
+			$new_rad_link = $( '<a>' );
+			$new_rad_link.attr( 'href', '#' );
+			$new_rad_link.text( 'Add new Rad' );
+			$new_rad_link.click( add_rad );
+			$ul = $( '<ul>' );
+			$li = $( '<li>' );
+			$ul.append( $li );
+			$li.append( $new_rad_link );
+			$lib_div.append( $ul );
+		};
+
 		$form = radlibs.form_input( '', submit_lib );
 		$contents_div.append( $form );
-		$form.trigger( 'visible' );
 		$contents_div.append( $lib_div );
 		$new_lib_button.detach();
 		radlibs.row_with_vacancy( 'lib-row' ).append( $contents_div );
 		radlibs.row_with_vacancy( 'lib-row' ).append( $new_lib_button );
-		$input.focus();
+		$form.trigger( 'visible' );
 	};
 
 	test_radlib = function( event ) {
@@ -82,6 +105,53 @@
 				alert( errorThrown );
 			}
 		});
+	};
+
+	add_rad = function( event ) {
+		var $form,
+			$container,
+			$li,
+			submit_rad,
+			lib_id,
+			new_rad_url,
+			$this = $( this );
+		event.preventDefault();
+
+		$container = $this.parents( 'div .lib-display' );
+		$li = $this.parent( 'li' );
+		new_rad_url = $( 'body' ).data( 'new_rad_url' );
+		lib_id = $container.data( 'lib_id' );
+		new_rad_url = new_rad_url.replace('%24lib_id', lib_id);
+
+		submit_rad = function( event ) {
+			var rad;
+			event.preventDefault();
+
+			rad = $form.find( 'input' ).val().trim();
+			$.ajax( new_rad_url, {
+				type: 'POST',
+				data: { rad: rad },
+				success: function( data, status, jqXHR ) {
+					var $list,
+						$new_li;
+					console.log( data );
+					$new_li = $( '<li>' );
+					$li.text( rad );
+					$new_li.append( $this );
+					$list = $li.parent( 'ul' );
+					$list.append( $new_li );
+				},
+				error: function( jqXHR, status, errorThrown ) {
+					alert( errorThrown );
+				}
+			});
+		};
+
+		$form = radlibs.form_input( '', submit_rad );
+
+		$this.detach();
+		$li.append( $form );
+		$form.trigger( 'visible' );
 	};
 
 	draw_new_member_button = function() {
@@ -158,6 +228,7 @@
 			draw_new_member_button();
 			$( '#fire' ).click( test_radlib );
 			$( '#radlib-form' ).submit( test_radlib );
+			$( '.new-rad' ).click( add_rad );
 		}
 	});
 })();

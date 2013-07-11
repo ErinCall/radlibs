@@ -36,28 +36,12 @@ def create_lib(association_id):
     return {'status': 'ok', 'lib_id': lib.lib_id}
 
 
-@app.route('/lib/<int:lib_id>')
-def view_lib(lib_id):
-    if not g.user:
-        abort(404)
-    session = Client().session()
-    try:
-        lib = find_lib(lib_id)
-    except NoResultFound:
-        abort(404)
-    association = session.query(Association).\
-        filter(Association.association_id == lib.association_id).\
-        one()
-    rads = session.query(Rad).filter(Rad.lib_id == lib_id).all()
-    return render_template('view_lib.html.jinja',
-                           lib=lib,
-                           rads=rads,
-                           breadcrumbs=breadcrumbs(association, lib.name))
-
-
+@app.route('/lib/$lib_id/rad/new', methods=['POST'], defaults={'lib_id': 0})
 @app.route('/lib/<int:lib_id>/rad/new', methods=['POST'])
 @json_endpoint
 def new_rad(lib_id):
+    if lib_id == 0:
+        return error_response('lib_id is required')
     if not g.user:
         return error_response('login required')
     session = Client().session()

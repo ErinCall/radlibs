@@ -65,7 +65,6 @@ js = Bundle('js/jquery.min.js',
             'js/live_demo.js',
             'js/invitation_registration.js',
             'js/edit_association.js',
-            'js/view_lib.js',
             filters='jsmin',
             output='gen/packed.%(version)s.js')
 assets.register('js_all', js)
