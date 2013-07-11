@@ -9,6 +9,7 @@ from logging.handlers import SMTPHandler
 from werkzeug.contrib.cache import RedisCache, SimpleCache
 from flask import Flask, render_template, g, session, request
 from flask.ext.assets import Environment, Bundle
+from flask_s3 import FlaskS3
 from sqlalchemy.orm.exc import NoResultFound
 from radlibs import Client
 from radlibs.table.user import User
@@ -46,8 +47,15 @@ if 'REDISTOGO_URL' in os.environ:
 else:
     app.cache = SimpleCache()
 
+app.config['S3_BUCKET_NAME'] = 'radlibs-assets'
+app.config['S3_USE_CACHE_CONTROL'] = False
+app.config['S3_CDN_DOMAIN'] = 'd2hwb9ozcl9dk9.cloudfront.net'
+app.config['FLASK_ASSETS_USE_S3'] = True
+app.config['USE_S3_DEBUG'] = True
 if os.getenv('ASSETS_DEBUG'):
     app.config['ASSETS_DEBUG'] = True
+    app.config['FLASK_ASSETS_USE_S3'] = False
+FlaskS3(app)
 assets = Environment(app)
 js = Bundle('js/jquery.min.js',
             'js/bootstrap.min.js',
@@ -59,13 +67,13 @@ js = Bundle('js/jquery.min.js',
             'js/edit_association.js',
             'js/view_lib.js',
             filters='jsmin',
-            output='gen/packed.js')
+            output='gen/packed.%(version)s.js')
 assets.register('js_all', js)
 css = Bundle("css/bootstrap.min.css",
              "css/bootstrap-responsive.min.css",
              "css/layout.css",
              filters='cssmin',
-             output='gen/packed.css')
+             output='gen/packed.%(version)s.css')
 assets.register('css_all', css)
 
 
