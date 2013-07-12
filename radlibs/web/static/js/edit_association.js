@@ -134,9 +134,27 @@
 				data: { rad: rad },
 				success: function( data, status, jqXHR ) {
 					var $list,
-						$new_li;
+						$new_li,
+						$edit_button,
+						$span,
+						$edit_link,
+						body;
+
+					$edit_button = $( '<img>' );
+					$edit_button.attr( 'src', $( 'body' ).data( 'img_edit_url' ));
+					$edit_button.attr( 'alt', 'edit' );
+					$edit_link = $( '<a>' );
+					$edit_link.attr( 'href', '#' );
+					$edit_link.append( $edit_button );
+					$edit_link.click( edit_rad );
+					body = JSON.parse( data );
+					$span = $( '<span>' );
+					$span.text( rad );
+					$li.text( '' );
+					$li.append( $span );
+					$li.append( $edit_link );
+					$li.data( 'rad_id', body[ 'rad_id' ] );
 					$new_li = $( '<li>' );
-					$li.text( rad );
 					$new_li.append( $this );
 					$list = $li.parent( 'ul' );
 					$list.append( $new_li );

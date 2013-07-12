@@ -95,7 +95,8 @@ class TestRadLib(TestCase):
         eq_(rad.rad, 'Shania Twain')
 
         body = json.loads(response.data)
-        eq_(body, {'status': 'ok'})
+        eq_(body, {'status': 'ok',
+                   'rad_id': rad.rad_id})
 
     @logged_in
     def test_add_rad__invalid_syntax(self, user):
@@ -173,8 +174,12 @@ class TestRadLib(TestCase):
             'rad': 'Stairway to <Location>',
         })
         eq_(response.status_code, 200)
+
+        rad = session.query(Rad).one()
+        eq_(rad.rad, 'Stairway to <Location>')
         body = json.loads(response.data)
-        eq_(body, {'status': 'ok'})
+        eq_(body, {'status': 'ok',
+                   'rad_id': rad.rad_id})
 
     @logged_in
     def test_add_new_rad_by_name__syntax_error(self, user):

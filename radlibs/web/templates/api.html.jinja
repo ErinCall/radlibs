@@ -81,7 +81,10 @@ post_params['signature'] = signature</pre>
             <dd>A string to be added to the given Lib's list of Rads.</dd>
         </dl>
         <p>Response:</p>
-        <pre>{"status": "ok"}</pre>
+        <pre>{
+    "status": "ok",
+    "rad_id": &lt;rad_id&gt;
+}</pre>
         <p>Errors:</p>
         <dl>
             <dt><code>no such lib</code></dt>
@@ -101,7 +104,10 @@ post_params['signature'] = signature</pre>
             <dd>A string to be added to the named Lib's list of Rads</dd>
         </dl>
         <p>Response:</p>
-        <pre>{"status": "ok"}</pre>
+        <pre>{
+    "status": "ok",
+    "rad_id": &lt;rad_id&gt;
+}</pre>
         <p>Errors:</p>
         <dl>
             <dt><code>no such association</code></dt>

@@ -58,7 +58,10 @@ def new_rad(lib_id):
               rad=request.form['rad'])
     session.add(rad)
     radlibs.lib.decache_lib(lib.name, lib.association_id)
-    return {'status': 'ok'}
+    return {
+        'status': 'ok',
+        'rad_id': rad.rad_id
+    }
 
 
 @app.route('/lib/rad/new', methods=['POST'])
@@ -89,7 +92,10 @@ def new_rad_by_name():
               rad=request.form['rad'])
     session.add(rad)
     radlibs.lib.decache_lib(lib.name, lib.association_id)
-    return {'status': 'ok'}
+    return {
+        'status': 'ok',
+        'rad_id': rad.rad_id,
+    }
 
 
 @app.route('/lib/rad/$rad_id/edit', methods=['POST'], defaults={'rad_id': 0})

@@ -57,6 +57,7 @@
             $( 'body' ).data( 'invite_user_url', "{{ url_for('invite_user', association_id = association.association_id) }}" );
             $( 'body' ).data( 'new_rad_url', "{{ url_for('new_rad') }}" );
             $( 'body' ).data( 'edit_rad_url', "{{ url_for('edit_rad') }}" );
+            $( 'body' ).data( 'img_edit_url', "{{ url_for('static', filename='img/edit-icon.png') }}" );
         });
     </script>
 {% endblock scripts %}
