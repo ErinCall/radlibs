@@ -94,7 +94,7 @@ def edit_rad(rad_id):
         return error_response('login required')
     session = Client().session()
     try:
-        rad = session.query(Rad).\
+        (rad, lib) = session.query(Rad, Lib).\
             join(Lib).\
             join(Association).\
             join(UserAssociation).\
@@ -106,6 +106,7 @@ def edit_rad(rad_id):
 
     rad.rad = request.form['rad']
     session.add(rad)
+    radlibs.lib.decache_lib(lib.name, lib.association_id)
     return {'status': 'ok'}
 
 
