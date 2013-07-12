@@ -135,7 +135,6 @@
 				success: function( data, status, jqXHR ) {
 					var $list,
 						$new_li;
-					console.log( data );
 					$new_li = $( '<li>' );
 					$li.text( rad );
 					$new_li.append( $this );
