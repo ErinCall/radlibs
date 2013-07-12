@@ -4,6 +4,9 @@ from radlibs.web import app, js, css
 import flask_s3
 
 
+print "=====> Generating minified Javascript"
 js.urls()
+print "=====> Generating minified CSS"
 css.urls()
+print "=====> Uploading to S3"
 flask_s3.create_all(app)
