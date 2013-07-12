@@ -12,7 +12,6 @@ def breadcrumbs(*args):
 
 
 def breadcrumb_for(value):
-    print type(value).mro()
     if isinstance(value, basestring):
         return (value, None)
     if isinstance(value, Association):

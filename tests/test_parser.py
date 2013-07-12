@@ -90,7 +90,7 @@ class TestParser(TestCase):
         load_lib = lambda lib_name: libs[lib_name]
         with patch('radlibs.parser.load_lib', load_lib):
             with assert_raises(ParseError) as error:
-                print unicode(parse('<Outermost>'))
+                unicode(parse('<Outermost>'))
 
         eq_(error.exception.message,
             "Unexpected token '>' at line 1 character 10 of 'HAY GUISE>' "

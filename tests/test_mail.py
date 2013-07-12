@@ -54,7 +54,6 @@ class TestSendInvitationEmail(TestCase):
         from_address, to_addresses, message = smtp.sendmail.mock_calls[0][1]
         eq_(from_address, 'welcome@radlibs.info')
         eq_(to_addresses, ['friend@ema.il'])
-        print message
         assert 'http://radlibs.info/accept_invitation/asdf' in message,\
             "Didn't see acceptance url"
         assert '<a href="http://radlibs.info/accept_invitation/asdf">' in message,\
