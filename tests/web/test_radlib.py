@@ -239,6 +239,62 @@ class TestRadLib(TestCase):
             'error': "missing param 'association_id'"
             })
 
+    @logged_in
+    def test_edit_rad(self, user):
+        session = Client().session()
+        association_id = self.create_association(user)
+        lib = Lib(name="Band", association_id=association_id)
+        session.add(lib)
+        session.flush()
+        rad = Rad(lib_id=lib.lib_id,
+                  created_by=user.user_id,
+                  rad='Huey Lewis and the Nws')
+        session.add(rad)
+        session.flush()
+
+        response = self.app.post('/lib/rad/{0}/edit'.format(rad.rad_id),
+                                 data={'rad': 'Huey Lewis and the News'})
+        eq_(response.status_code, 200, response.data)
+        body = json.loads(response.data)
+        eq_(body, {'status': 'ok'})
+
+    def test_edit_rad__requires_login(self):
+        response = self.app.post('/lib/rad/1/edit',
+                                 data={'rad': 'Huey Lewis and the News'})
+        eq_(response.status_code, 200, response.data)
+        body = json.loads(response.data)
+        eq_(body, {'status': 'error', 'error': 'login required'})
+
+    @logged_in
+    def test_edit_rad__requires_correct_login(self, user):
+        session = Client().session()
+        other_user = User()
+        session.add(other_user)
+        session.flush()
+        association_id = self.create_association(other_user)
+        lib = Lib(name="Band", association_id=association_id)
+        session.add(lib)
+        session.flush()
+        rad = Rad(lib_id=lib.lib_id,
+                  created_by=user.user_id,
+                  rad='Hairy Loris and the Norse')
+        session.add(rad)
+        session.flush()
+
+        response = self.app.post('/lib/rad/{0}/edit'.format(rad.rad_id),
+                                 data={'rad': 'Hoary Loaders and the Noose'})
+        eq_(response.status_code, 200, response.data)
+        body = json.loads(response.data)
+        eq_(body, {'status': 'error', 'error': 'no such rad'})
+
+    @logged_in
+    def test_edit_rad__nonexistent_rad_id(self, user):
+        response = self.app.post('/lib/rad/1/edit',
+                                 data={'rad': 'Huey Lewis and the News'})
+        eq_(response.status_code, 200, response.data)
+        body = json.loads(response.data)
+        eq_(body, {'status': 'error', 'error': 'no such rad'})
+
     @nottest
     def create_association(self, user):
         session = Client().session()

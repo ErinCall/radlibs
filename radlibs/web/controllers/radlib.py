@@ -84,6 +84,31 @@ def new_rad_by_name():
     return {'status': 'ok'}
 
 
+@app.route('/lib/rad/$rad_id/edit', methods=['POST'], defaults={'rad_id': 0})
+@app.route('/lib/rad/<int:rad_id>/edit', methods=['POST'])
+@json_endpoint
+def edit_rad(rad_id):
+    if rad_id == 0:
+        abort(404)
+    if not g.user:
+        return error_response('login required')
+    session = Client().session()
+    try:
+        rad = session.query(Rad).\
+            join(Lib).\
+            join(Association).\
+            join(UserAssociation).\
+            filter(UserAssociation.user_id == g.user.user_id).\
+            filter(Rad.rad_id == rad_id).\
+            one()
+    except NoResultFound:
+        return error_response('no such rad')
+
+    rad.rad = request.form['rad']
+    session.add(rad)
+    return {'status': 'ok'}
+
+
 def find_lib(lib_id):
     return Client().session().query(Lib).\
         join(Association,

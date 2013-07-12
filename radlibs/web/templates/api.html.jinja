@@ -136,6 +136,20 @@ post_params['signature'] = signature</pre>
             <dt><code>'&lt;lib name&gt;' is not a valid lib name</code></dt>
             <dd>The lib name you submitted is not valid. Lib names must be a single capital letter followed by only lowercase letters and underscores.</dd>
         </dl>
+
+        <h4 id="edit_rad">edit_rad: <code>/lib/rad/&lt;rad_id&gt;/edit</code></h4>
+        <p>Params:</p>
+        <dl>
+            <dt><code>rad</code></dt>
+            <dd>The new contents of the rad you are editing.</dd>
+        </dl>
+        <p>Response:</p>
+        <pre>{"status": "ok"}</pre>
+        <p>Errors:</p>
+        <dl>
+            <dt><code>no such rad</code></dt>
+            <dd>The rad_id you passed in the uri does not map to a Rad that you have permission to edit.</dd>
+        </dl>
     </div>
 </div>
 
