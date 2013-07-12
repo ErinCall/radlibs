@@ -94,7 +94,7 @@ def indefinite_article_for_noun(noun):
 
     # HANDLE y... (BEFORE CERTAIN CONSONANTS IMPLIES (UNNATURALIZED) "i.." SOUND)
 
-    if re.match('({0}'.format(A_y_cons), noun, re.IGNORECASE):
+    if re.match('({0})'.format(A_y_cons), noun, re.IGNORECASE):
         return "an"
 
     return "a"
