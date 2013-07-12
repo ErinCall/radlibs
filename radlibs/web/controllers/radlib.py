@@ -19,7 +19,7 @@ def create_lib(association_id):
     if not g.user:
         return error_response('login required')
     name = request.form['name']
-    if not re.search('^[A-Z]\w*$', name):
+    if not re.search('^[A-Z][a-z_]*$', name):
         return error_response("'{0}' is not a valid lib name".format(name))
     session = Client().session()
     try:
