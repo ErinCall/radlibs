@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 import re
 import radlibs.lib
-from flask import render_template, g, request, abort
+from flask import g, request, abort
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 from radlibs import Client
@@ -10,7 +10,7 @@ from radlibs.web import app
 from radlibs.table.association import Association, UserAssociation
 from radlibs.table.radlib import Rad, Lib
 from radlibs.web.json_endpoint import json_endpoint, error_response
-from radlibs.web.breadcrumbs import breadcrumbs
+from radlibs.parser import parse, ParseError
 
 
 @app.route('/association/<int:association_id>/lib/new', methods=['POST'])
@@ -44,6 +44,10 @@ def new_rad(lib_id):
         return error_response('lib_id is required')
     if not g.user:
         return error_response('login required')
+    try:
+        parse(request.form['rad'])
+    except ParseError as e:
+        return error_response('parse error: {0}'.format(e.message))
     session = Client().session()
     try:
         lib = find_lib(lib_id)
@@ -62,6 +66,10 @@ def new_rad(lib_id):
 def new_rad_by_name():
     if not g.user:
         return error_response('login required')
+    try:
+        parse(request.form['rad'])
+    except ParseError as e:
+        return error_response('parse error: {0}'.format(e.message))
     session = Client().session()
     lib_name = request.form['lib']
     association_id = request.form['association_id']
@@ -92,6 +100,10 @@ def edit_rad(rad_id):
         abort(404)
     if not g.user:
         return error_response('login required')
+    try:
+        parse(request.form['rad'])
+    except ParseError as e:
+        return error_response('parse error: {0}'.format(e.message))
     session = Client().session()
     try:
         (rad, lib) = session.query(Rad, Lib).\

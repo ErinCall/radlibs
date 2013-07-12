@@ -98,6 +98,26 @@ class TestRadLib(TestCase):
         eq_(body, {'status': 'ok'})
 
     @logged_in
+    def test_add_rad__invalid_syntax(self, user):
+        session = Client().session()
+        association_id = self.create_association(user)
+        lib = Lib(name="Artist", association_id=association_id)
+        session.add(lib)
+        session.flush()
+
+        response = self.app.post('/lib/{0}/rad/new'.format(lib.lib_id),
+                                 data={'rad': 'Ziggy Astral_body>dust'})
+        eq_(response.status_code, 200)
+
+        rads = session.query(Rad).all()
+        eq_(rads, [])
+
+        body = json.loads(response.data)
+        eq_(body, {'status': 'error',
+                   'error': "parse error: Unexpected token '>' at line 1 "
+                            "character 18 of 'Ziggy Astral_body>dust'"})
+
+    @logged_in
     def test_add_new_rad__nonexistent_lib_id(self, user):
         response = self.app.post('/lib/8/rad/new',
                                  data={'rad': 'what is happening'})
@@ -155,6 +175,25 @@ class TestRadLib(TestCase):
         eq_(response.status_code, 200)
         body = json.loads(response.data)
         eq_(body, {'status': 'ok'})
+
+    @logged_in
+    def test_add_new_rad_by_name__syntax_error(self, user):
+        session = Client().session()
+        association_id = self.create_association(user)
+        lib = Lib(name="Song", association_id=association_id)
+        session.add(lib)
+        session.flush()
+
+        response = self.app.post('/lib/rad/new', data={
+            'association_id': association_id,
+            'lib': 'Song',
+            'rad': 'All you need is <Emotion',
+        })
+        eq_(response.status_code, 200)
+        body = json.loads(response.data)
+        eq_(body, {'status': 'error',
+                   'error': "parse error: Unexpected token '<' at line 1 "
+                            "character 17 of 'All you need is <Emotion'"})
 
     @logged_in
     def test_new_rad_by_name__no_such_lib(self, user):
@@ -257,6 +296,27 @@ class TestRadLib(TestCase):
         eq_(response.status_code, 200, response.data)
         body = json.loads(response.data)
         eq_(body, {'status': 'ok'})
+
+    @logged_in
+    def test_edit_rad__invalid_syntax(self, user):
+        session = Client().session()
+        association_id = self.create_association(user)
+        lib = Lib(name="Band", association_id=association_id)
+        session.add(lib)
+        session.flush()
+        rad = Rad(lib_id=lib.lib_id,
+                  created_by=user.user_id,
+                  rad='The Beatles')
+        session.add(rad)
+        session.flush()
+
+        response = self.app.post('/lib/rad/{0}/edit'.format(rad.rad_id),
+                                 data={'rad': 'The <Animals'})
+        eq_(response.status_code, 200, response.data)
+        body = json.loads(response.data)
+        eq_(body, {'status': 'error',
+                   'error': "parse error: Unexpected token '<' at line 1 "
+                            "character 5 of 'The <Animals'"})
 
     def test_edit_rad__requires_login(self):
         response = self.app.post('/lib/rad/1/edit',

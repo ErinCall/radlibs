@@ -86,6 +86,8 @@ post_params['signature'] = signature</pre>
         <dl>
             <dt><code>no such lib</code></dt>
             <dd>The lib_id you passed in the uri does not map to a Lib that you have permission to use.</dd>
+            <dt><code>parse error: &lt;error message&gt;</code></dt>
+            <dd>The rad's syntax was invalid. The error message will go into more detail.</dd>
         </dl>
 
         <h4 id="new_rad_by_name">new_rad_by_name: <code>/lib/rad/new</code></h4>
@@ -106,6 +108,8 @@ post_params['signature'] = signature</pre>
             <dd>The association_id you passed in the uri does not map to an Association that you have permission to use.</dd>
             <dt><code>no such lib '&lt;lib&gt;'</code></dt>
             <dd>The named lib doesn't exist in the Association.</dd>
+            <dt><code>parse error: &lt;error message&gt;</code></dt>
+            <dd>The rad's syntax was invalid. The error message will go into more detail.</dd>
         </dl>
 
         <h4 id="test_authorization">test_authorization: <code>/test_authorization</code></h4>
