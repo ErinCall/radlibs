@@ -227,7 +227,7 @@
 				event.preventDefault();
 				var email;
 
-				email = $input.val().trim();
+				email = $form.find( 'input' ).val().trim();
 				$form.remove();
 				$.ajax( $( 'body' ).data( 'invite_user_url' ), {
 					type: 'POST',
