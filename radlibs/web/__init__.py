@@ -82,7 +82,7 @@ def before_request():
         g.user = None
     if 'user' in session:
         user = Client().session().query(User).\
-            filter(User.email == session['user']['email']).\
+            filter(User.identifier == session['user']['identifier']).\
             one()
         g.user = user
     elif all(map(lambda x: x in request.form,
