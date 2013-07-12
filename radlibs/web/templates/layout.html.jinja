@@ -11,9 +11,9 @@
         <link href="{{ ASSET_URL }}" rel="stylesheet">
     {% endassets %}
 
-    <link rel="apple-touch-icon"      href="/static/img/favicon-128.png">
-    <link rel="icon" type="image/png" href="/static/img/favicon-128.png">
-    <link rel="icon" type="image/png" href="/static/img/favicon-16.png">
+    <link rel="apple-touch-icon"      href="{{ url_for('static', filename='img/favicon-128.png') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon-128.png') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon-16.png') }}">
 
 </head>
 

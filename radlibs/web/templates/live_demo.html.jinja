@@ -14,7 +14,7 @@
 		<h4>
 			Carne
 			<a href="#">
-				<img src="/static/img/edit-icon.png" alt="edit this" class="edit-button">
+				<img src="{{ url_for('static', filename='img/edit-icon.png') }}" alt="edit this" class="edit-button">
 			</a>
 		</h4>
 		<textarea name="carne" id="carne" class="library" rows="10">chapulines
@@ -29,7 +29,7 @@ tocineta y &lt;Carne&gt;</textarea>
 		<h4>
 			Food
 			<a href="#">
-				<img src="/static/img/edit-icon.png" alt="edit this" class="edit-button">
+				<img src="{{ url_for('static', filename='img/edit-icon.png') }}" alt="edit this" class="edit-button">
 			</a>
 		</h4>
 		<textarea class="library" name="food" id="food" rows="10">arroz con &lt;Carne&gt;
@@ -46,7 +46,7 @@ donut</textarea>
 		<h4>
 			Animal
 			<a href="#">
-				<img src="/static/img/edit-icon.png" alt="edit this" class="edit-button">
+				<img src="{{ url_for('static', filename='img/edit-icon.png') }}" alt="edit this" class="edit-button">
 			</a>
 		</h4>
 		<textarea class="library" name="animal" id="animal" rows="10">bat
@@ -65,7 +65,7 @@ LOL&lt;Animal&gt;</textarea>
 		<h4>
 			Location
 			<a href="#">
-				<img src="/static/img/edit-icon.png" alt="edit this" class="edit-button">
+				<img src="{{ url_for('static', filename='img/edit-icon.png') }}" alt="edit this" class="edit-button">
 			</a>
 		</h4>
 		<textarea name="location" id="location" rows="10" class="library">Castle Greyskull
@@ -81,7 +81,7 @@ the linen closet</textarea>
 		<h4>
 			Condiment
 			<a href="#">
-				<img src="/static/img/edit-icon.png" alt="edit this" class="edit-button">
+				<img src="{{ url_for('static', filename='img/edit-icon.png') }}" alt="edit this" class="edit-button">
 			</a>
 		</h4>
 		<textarea name="condiment" id="condiment" rows="10" class="library">&lt;Food&gt; relish
