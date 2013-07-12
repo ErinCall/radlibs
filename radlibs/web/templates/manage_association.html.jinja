@@ -4,59 +4,59 @@
 {% set js_page = 'manage_associations' %}
 {% block content %}
 <div class="jumbotron">
-	<h1>{{ association.name |e}}</h1>
-	<form action="#" id='radlib-form'>
-		<input type="text" id="radlib" value="">
-	</form>
+    <h1>{{ association.name |e}}</h1>
+    <form action="#" id='radlib-form'>
+        <input type="text" id="radlib" value="">
+    </form>
     <a class="btn btn-large btn-success" href="#" id="fire">Evaluate!</a>
 </div>
 {% for email in member_emails %}
-	{% if loop.index0 is divisibleby 3 %}
-		<div class="row-fluid marketing member-row">
-	{% endif %}
-			<div class="span4">{{ email |e}}</div>
-	{% if (loop.index is divisibleby 3) or (loop.last) %}
-		</div>
-	{% endif %}
+    {% if loop.index0 is divisibleby 3 %}
+        <div class="row-fluid marketing member-row">
+    {% endif %}
+            <div class="span4">{{ email |e}}</div>
+    {% if (loop.index is divisibleby 3) or (loop.last) %}
+        </div>
+    {% endif %}
 {% endfor %}
 {% for lib_name in libs.keys() %}
-	{% if loop.index0 is divisibleby 3 %}
-		<div class="row-fluid marketing lib-row">
-	{% endif %}
-			<div class="span4">
-				<h4>
-					{{ lib_name |e}}
-				</h4>
-				<div class="lib-display" data-lib_id="{{ libs[lib_name]['lib_id'] }}">
-					<ul>
-						{% for rad in libs[lib_name]['rads'] %}
-							<li data-rad_id="{{ rad.rad_id }}">
-								<span>{{ rad.rad |e}}</span>
-								<a href="#" class="edit-rad">
-									<img src="{{ url_for('static', filename='img/edit-icon.png') }}" alt="edit">
-								</a>
-							</li>
-						{% endfor %}
-						<li><a href="#" class="new-rad">Add new Rad</a></li>
-					</ul>
-				</div>
-			</div>
-	{% if (loop.index is divisibleby 3) or (loop.last) %}
-		</div>
-	{% endif %}
+    {% if loop.index0 is divisibleby 3 %}
+        <div class="row-fluid marketing lib-row">
+    {% endif %}
+            <div class="span4">
+                <h4>
+                    {{ lib_name |e}}
+                </h4>
+                <div class="lib-display" data-lib_id="{{ libs[lib_name]['lib_id'] }}">
+                    <ul>
+                        {% for rad in libs[lib_name]['rads'] %}
+                            <li data-rad_id="{{ rad.rad_id }}">
+                                <span>{{ rad.rad |e}}</span>
+                                <a href="#" class="edit-rad">
+                                    <img src="{{ url_for('static', filename='img/edit-icon.png') }}" alt="edit">
+                                </a>
+                            </li>
+                        {% endfor %}
+                        <li><a href="#" class="new-rad">Add new Rad</a></li>
+                    </ul>
+                </div>
+            </div>
+    {% if (loop.index is divisibleby 3) or (loop.last) %}
+        </div>
+    {% endif %}
 {% else %}
-	<div class="row-fluid marketing lib-row">
-	</div>
+    <div class="row-fluid marketing lib-row">
+    </div>
 {% endfor %}
 {% endblock content %}
 {% block scripts %}
-	<script>
-		$(document).ready(function() {
-			$( 'body' ).data( 'new_lib_url', "{{ url_for('create_lib', association_id = association.association_id)}}" );
-			$( 'body' ).data( 'test_radlib_url', "{{ url_for('test_radlib', association_id = association.association_id) }}" );
-			$( 'body' ).data( 'invite_user_url', "{{ url_for('invite_user', association_id = association.association_id) }}" );
-			$( 'body' ).data( 'new_rad_url', "{{ url_for('new_rad') }}" );
-			$( 'body' ).data( 'edit_rad_url', "{{ url_for('edit_rad') }}" );
-		});
-	</script>
+    <script>
+        $(document).ready(function() {
+            $( 'body' ).data( 'new_lib_url', "{{ url_for('create_lib', association_id = association.association_id)}}" );
+            $( 'body' ).data( 'test_radlib_url', "{{ url_for('test_radlib', association_id = association.association_id) }}" );
+            $( 'body' ).data( 'invite_user_url', "{{ url_for('invite_user', association_id = association.association_id) }}" );
+            $( 'body' ).data( 'new_rad_url', "{{ url_for('new_rad') }}" );
+            $( 'body' ).data( 'edit_rad_url', "{{ url_for('edit_rad') }}" );
+        });
+    </script>
 {% endblock scripts %}
