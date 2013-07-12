@@ -3,6 +3,7 @@
 	var new_lib,
 		test_radlib,
 		add_rad,
+		edit_rad,
 		draw_new_member_button,
 		radlibs = window.radlibs;
 
@@ -154,6 +155,55 @@
 		$form.trigger( 'visible' );
 	};
 
+	edit_rad = function( event ) {
+		event.preventDefault();
+		var $form,
+			$ul,
+			$new_li,
+			$li,
+			$span,
+			rad_id,
+			rad,
+			submit_edit,
+			$this = $( this );
+
+		$li = $this.parent( 'li' );
+		$ul = $li.parent( 'ul' );
+		$span = $li.find( 'span' );
+		rad = $span.text().trim();
+
+		submit_edit = function ( event ) {
+			var rad_id,
+				edit_rad_url;
+
+			rad_id = $li.data( 'rad_id' );
+
+			edit_rad_url = $( 'body' ).data( 'edit_rad_url' );
+			edit_rad_url = edit_rad_url.replace( '%24rad_id', rad_id );
+			event.preventDefault();
+			rad = $form.find( 'input' ).val().trim();
+			$.ajax( edit_rad_url, {
+				type: 'POST',
+				data: {rad: rad},
+				success: function(data, status, jqXHR) {
+					$span.text( rad );
+					$new_li.after( $li );
+					$new_li.remove();
+				},
+				error: function(jqXHR, status, errorThrown) {
+					alert( errorThrown );
+				}
+			});
+		};
+
+		$new_li = $( '<li>' );
+		$form = radlibs.form_input( rad, submit_edit );
+		$new_li.append( $form );
+		$li.after( $new_li );
+		$li.detach();
+		$form.trigger( 'visible' );
+	};
+
 	draw_new_member_button = function() {
 		var $row,
 			invite_user,
@@ -229,6 +279,7 @@
 			$( '#fire' ).click( test_radlib );
 			$( '#radlib-form' ).submit( test_radlib );
 			$( '.new-rad' ).click( add_rad );
+			$( '.edit-rad' ).click( edit_rad );
 		}
 	});
 })();

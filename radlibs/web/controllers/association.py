@@ -75,6 +75,7 @@ def manage_association(association_id):
         abort(404)
     radlibs = session.query(Lib.name,
                             Lib.lib_id,
+                            Rad.rad_id,
                             Rad.rad).\
         select_from(Lib).\
         outerjoin(Rad, Lib.lib_id == Rad.lib_id).\
@@ -87,12 +88,12 @@ def manage_association(association_id):
         all()
 
     libs = {}
-    for (lib_name, lib_id, rad) in radlibs:
+    for (lib_name, lib_id, rad_id, rad) in radlibs:
         if lib_name not in libs:
             libs[lib_name] = {'rads': []}
         libs[lib_name]['lib_id'] = lib_id
         if rad:
-            libs[lib_name]['rads'].append(rad)
+            libs[lib_name]['rads'].append({'rad_id': rad_id, 'rad': rad})
     return render_template('manage_association.html.jinja',
                            association=association,
                            libs=libs,

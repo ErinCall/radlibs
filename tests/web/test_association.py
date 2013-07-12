@@ -111,18 +111,21 @@ class TestAssociation(TestCase):
         session.add(animal)
         session.flush()
 
-        session.add(Rad(
+        chili = Rad(
             rad="Chili con carne",
             lib_id=food.lib_id,
-            created_by=user.user_id))
-        session.add(Rad(
+            created_by=user.user_id)
+        session.add(chili)
+        eggs = Rad(
             rad="<Animal> eggs",
             lib_id=food.lib_id,
-            created_by=user.user_id))
-        session.add(Rad(
+            created_by=user.user_id)
+        session.add(eggs)
+        buzzhawk = Rad(
             rad="Buzzhawk",
             lib_id=animal.lib_id,
-            created_by=user.user_id))
+            created_by=user.user_id)
+        session.add(buzzhawk)
 
         response = self.app.get('/association/{0}'.format(
             watercooler.association_id))
@@ -135,6 +138,13 @@ class TestAssociation(TestCase):
         assert 'Chili con carne' in response.data, "didn't see Chili"
         assert '&lt;Animal&gt; eggs' in response.data, "didn't see eggs"
         assert 'Buzzhawk' in response.data, "didn't see buzzhawk"
+
+        assert 'data-rad_id="{0}"'.format(chili.rad_id) in response.data, \
+            "didn't see chili.rad_id"
+        assert 'data-rad_id="{0}"'.format(eggs.rad_id) in response.data, \
+            "didn't see eggs.rad_id"
+        assert 'data-rad_id="{0}"'.format(buzzhawk.rad_id) in response.data, \
+            "didn't see buzzhawk.rad_id"
 
     @logged_in
     def test_see_libs_with_no_associated_rad(self, user):

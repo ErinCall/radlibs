@@ -30,7 +30,12 @@
 				<div class="lib-display" data-lib_id="{{ libs[lib_name]['lib_id'] }}">
 					<ul>
 						{% for rad in libs[lib_name]['rads'] %}
-							<li>{{ rad |e}}</li>
+							<li data-rad_id="{{ rad.rad_id }}">
+								<span>{{ rad.rad |e}}</span>
+								<a href="#" class="edit-rad">
+									<img src="{{ url_for('static', filename='img/edit-icon.png') }}" alt="edit">
+								</a>
+							</li>
 						{% endfor %}
 						<li><a href="#" class="new-rad">Add new Rad</a></li>
 					</ul>
@@ -51,6 +56,7 @@
 			$( 'body' ).data( 'test_radlib_url', "{{ url_for('test_radlib', association_id = association.association_id) }}" );
 			$( 'body' ).data( 'invite_user_url', "{{ url_for('invite_user', association_id = association.association_id) }}" );
 			$( 'body' ).data( 'new_rad_url', "{{ url_for('new_rad') }}" );
+			$( 'body' ).data( 'edit_rad_url', "{{ url_for('edit_rad') }}" );
 		});
 	</script>
 {% endblock scripts %}
